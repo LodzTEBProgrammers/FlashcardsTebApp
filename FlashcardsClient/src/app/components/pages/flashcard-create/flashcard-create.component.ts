@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
-import {FlashcardService} from "../../services/flashcard.service";
-import {Flashcard} from "../../models/flashcard.model";
+import {FlashcardService} from "../../../services/flashcard.service";
+import {Flashcard} from "../../../models/flashcard.model";
 import { v4 as uuidv4 } from 'uuid';
 
 @Component({

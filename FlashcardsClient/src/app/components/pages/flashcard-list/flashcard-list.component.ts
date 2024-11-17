@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {Flashcard} from "../../models/flashcard.model";
-import {FlashcardService} from "../../services/flashcard.service";
+import {Flashcard} from "../../../models/flashcard.model";
+import {FlashcardService} from "../../../services/flashcard.service";
 
 @Component({
   selector: 'app-flashcard-list',
