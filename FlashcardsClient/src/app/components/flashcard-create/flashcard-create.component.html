@@ -1,0 +1,17 @@
+<div>
+  <input placeholder="Termin" #term/>
+  <input placeholder="Definicja" #definition/>
+  <button (click)="addFlashcard(term.value, definition.value)">Dodaj fiszkę</button>
+</div>
+
+@if(flashcards.length === 0) {
+  <p>Brak fiszek</p>
+} @else {
+  @for (flashcard of flashcards; track flashcard.id) {
+    <h3>{{ flashcard.term }}</h3>
+    <p>{{ flashcard.definition }}</p>
+    <button (click)="markAsRemembered(flashcard.id)" [disabled]="flashcard.remembered">
+      {{ flashcard.remembered ? 'Zapamiętane' : 'Oznacz jako zapamiętane' }}
+    </button>
+  }
+}
