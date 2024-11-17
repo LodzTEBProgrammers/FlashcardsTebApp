@@ -7,17 +7,37 @@
         </button>
         <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <li>
-            <a class="dropdown-item" [routerLink]="['/dropdown-content']" (click)="closeDropdown()">
+            <button class="dropdown-item" (click)="closeDropdown()">
               <i class="bi bi-card-text"></i> Zestaw fiszek
-            </a>
+            </button>
           </li>
           <li>
-            <a class="dropdown-item" [routerLink]="['/dropdown-content']" (click)="closeDropdown()">
+            <button class="dropdown-item" (click)="openModal()">
               <i class="bi bi-folder"></i> Folder
-            </a>
+            </button>
           </li>
         </ul>
       </li>
     </ul>
   </div>
 </nav>
+
+
+<!-- Modal -->
+<div class="modal fade" id="createFolderModal" tabindex="-1" aria-labelledby="createFolderModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createFolderModalLabel">Stwórz nowy folder</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <input placeholder="Tytuł" #folderName class="form-control"/>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        <button type="button" class="btn btn-primary" (click)="addFolder()">Stwórz folder</button>
+      </div>
+    </div>
+  </div>
+</div>
