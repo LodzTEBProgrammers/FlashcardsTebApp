@@ -1,18 +1,51 @@
+<nav class="navbar navbar-dark bg-primary">
+  <div class="d-flex align-items-center">
+    <button class="navbar-toggler ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand ms-3" href="#">
+      <img width="100" src="teb_logo.svg" alt="Logo"/>
+      Flashcards TEB App
+    </a>
+  </div>
+</nav>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">
-      <img width="100" src="teb_logo.svg"/>
-      Flashcards TEB App</a>
-    <div class="container">
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav mr-auto">
-          <li class="nav-item active">
-            <a class="nav-link" routerLink="">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" routerLink="/create">Create</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+<div class="offcanvas offcanvas-start bg-primary text-white" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="sidebarLabel">
+      <img width="100" src="teb_logo.svg" alt="Logo"/>
+      Flashcards TEB App
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-house-door"></i> Strona główna
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" routerLink="/">
+          <i class="bi bi-folder"></i> Twoje zasoby
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-bell"></i> Powiadomienia
+        </a>
+      </li>
+      <hr class="border-white">
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-card-text"></i> Fiszki
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          <i class="bi bi-journal-check"></i> Rozwiązania eksper...
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
