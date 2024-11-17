@@ -1,0 +1,40 @@
+.navbar {
+  position: relative; /* Ensure the navbar is the reference point for absolute positioning */
+  overflow: visible; /* Allow overflow to be visible */
+  background-color: #0a082d;
+}
+
+.dropdown-menu {
+  position: absolute; /* Position the dropdown menu absolutely */
+  top: 100%; /* Position it below the navbar */
+  right: 0; /* Align it with the right edge of the button */
+  z-index: 1000; /* Ensure it appears above other elements */
+  display: none; /* Hide the dropdown by default */
+  margin-top: 8px;
+}
+
+.nav-item.dropdown.show .dropdown-menu {
+  display: block; /* Show the dropdown when the parent has the 'show' class */
+}
+
+
+.nav-link {
+  background-color: #4355ff;
+  border-radius: .5rem;
+  padding: 9px;
+  width: 40px;
+  text-align: center;
+}
+
+.nav-link:hover {
+  background-color: #423ed8;
+}
+
+img {
+  width: 23px;
+  color: white;
+}
+
+.filter-white {
+  filter: invert(1);
+}

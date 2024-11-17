@@ -1,0 +1,23 @@
+<nav class="navbar navbar-light">
+  <div class="container-fluid">
+    <ul class="navbar-nav">
+      <li class="nav-item dropdown" [class.show]="isDropdownOpen">
+        <button class="nav-link" id="navbarDropdownMenuLink" role="button" (click)="toggleDropdown($event)" aria-expanded="false" title="Stwórz">
+          <img src="plus.svg" class="filter-white">
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <li>
+            <a class="dropdown-item" [routerLink]="['/dropdown-content']" (click)="closeDropdown()">
+              <i class="bi bi-card-text"></i> Zestaw fiszek
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" [routerLink]="['/dropdown-content']" (click)="closeDropdown()">
+              <i class="bi bi-folder"></i> Folder
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
