@@ -23,4 +23,9 @@ export class FlashcardListComponent implements OnInit {
   markAsRemembered(id: string) {
     this.flashcardService.markAsRemembered(id);
   }
+
+  deleteFlashcard(id: string) {
+    this.flashcardService.deleteFlashcard(id);
+  }
 }
+

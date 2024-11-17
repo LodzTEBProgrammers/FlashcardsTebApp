@@ -26,6 +26,12 @@ export class FlashcardService {
     }
   }
 
+  deleteFlashcard(id: string) {
+    this.flashcards = this.flashcards.filter(f => f.id !== id);
+    this.saveFlashcards();
+    this.flashcards$.next(this.flashcards);
+  }
+
   private saveFlashcards() {
     localStorage.setItem('flashcards', JSON.stringify(this.flashcards));
   }

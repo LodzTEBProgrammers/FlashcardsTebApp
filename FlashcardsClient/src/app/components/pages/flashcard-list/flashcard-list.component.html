@@ -7,5 +7,6 @@
     <button (click)="markAsRemembered(flashcard.id)" [disabled]="flashcard.remembered">
       {{ flashcard.remembered ? 'Zapamiętane' : 'Oznacz jako zapamiętane' }}
     </button>
+    <button (click)="deleteFlashcard(flashcard.id)">Usuń</button>
   }
 }
