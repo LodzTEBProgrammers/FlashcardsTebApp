@@ -1,9 +1,40 @@
+<div class="menu-container">
+  <nav class="menu">
+    <a #leftLink href="/resources" routerLinkActive="active" (mouseenter)="setActive('left', true, $event)" (mouseleave)="setActive('left', false, $event)">Zestawy fiszek</a>
+    <a #rightLink href="/folders" routerLinkActive="active" (mouseenter)="setActive('right', true, $event)" (mouseleave)="setActive('right', false, $event)">Foldery</a>
+  </nav>
+  <div class="border-indicator">
+    <div class="left-border" [ngClass]="{'active': isLeftActive}" [style.width.px]="leftBorderWidth"></div>
+    <div class="right-border" [ngClass]="{'active': isRightActive}" [style.width.px]="rightBorderWidth"></div>
+  </div>
+</div>
+
 <div class="container">
-  <h1>Twoje Zasoby</h1>
-  <div *ngFor="let set of flashcardSets" class="flashcard-set">
-    <h2>{{ set.title }}</h2>
-    <p>{{ set.description }}</p>
-    <p>Utworzono: {{ set.createdAt | date }}</p>
-    <button (click)="openSet(set.id)" class="btn btn-primary">Otwórz</button>
+  <div class="filter-bar">
+    <select [(ngModel)]="selectedOption" (change)="onOptionChange($event)">
+      <option value="created">Utworzone</option>
+      <option value="recent">Ostatnie zestawy</option>
+      <option value="studied">Uczyłem się</option>
+    </select>
+    <div class="search-bar">
+      <input type="text" placeholder="Wyszukuj fiszki" [(ngModel)]="searchQuery" (input)="onSearch()" />
+      <i class="bi bi-search"></i>
+    </div>
+  </div>
+
+  <div *ngIf="selectedOption === 'created'">
+    <!-- Wyświetl utworzone zestawy fiszek -->
+    <div *ngFor="let set of flashcardSets">
+      <h3>{{ set.title }}</h3>
+      <p>{{ set.description }}</p>
+      <p>Utworzono: {{ set.createdAt | date }}</p>
+      <button (click)="openSet(set.id)" class="btn btn-primary">Otwórz</button>
+    </div>
+  </div>
+  <div *ngIf="selectedOption === 'recent'">
+    <!-- Wyświetl ostatnie zestawy fiszek -->
+  </div>
+  <div *ngIf="selectedOption === 'studied'">
+    <!-- Wyświetl zestawy fiszek, które użytkownik się uczył -->
   </div>
 </div>
