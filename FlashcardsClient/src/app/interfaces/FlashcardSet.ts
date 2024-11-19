@@ -6,4 +6,6 @@ export interface FlashcardSet {
   description: string;
   flashcards: Flashcard[];
   createdAt: Date;
+  termCount: number;
+  username: string; // Add this line
 }

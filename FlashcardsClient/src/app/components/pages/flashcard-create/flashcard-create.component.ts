@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
 import {FlashcardService} from "../../../services/flashcard.service";
 import {Flashcard} from "../../../interfaces/Flashcard";
 import { v4 as uuidv4 } from 'uuid';
@@ -18,7 +18,7 @@ export class FlashcardCreateComponent implements OnInit {
   title: string = '';
   description: string = '';
 
-  constructor(private flashcardService: FlashcardService) {}
+  constructor(private flashcardService: FlashcardService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     // Initialize flashcards if needed
@@ -56,8 +56,11 @@ export class FlashcardCreateComponent implements OnInit {
       title: this.title,
       description: this.description,
       flashcards: this.flashcards,
-      createdAt: new Date()
+      createdAt: new Date(),
+      termCount: this.flashcards.length, // Add this line
+      username: 'nic00la1' // Add this line, replace with actual username
     };
     this.flashcardService.addFlashcardSet(newSet);
+    this.cdr.detectChanges(); // Manually trigger change detection
   }
 }

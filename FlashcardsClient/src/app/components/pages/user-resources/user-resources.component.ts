@@ -2,7 +2,7 @@ import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/
 import {FlashcardService} from "../../../services/flashcard.service";
 import {CommonModule, DatePipe} from "@angular/common";
 import {FlashcardSet} from "../../../interfaces/FlashcardSet";
-import {Router, RouterModule} from '@angular/router';
+import {Router, RouterLink, RouterModule} from '@angular/router';
 import {FormsModule} from "@angular/forms";
 
 @Component({
@@ -11,7 +11,8 @@ import {FormsModule} from "@angular/forms";
   imports: [
     DatePipe,
     CommonModule,
-    FormsModule
+    FormsModule,
+    RouterLink
   ],
   templateUrl: './user-resources.component.html',
   styleUrl: './user-resources.component.css'

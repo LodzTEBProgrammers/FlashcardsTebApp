@@ -24,11 +24,27 @@
 
   <div *ngIf="selectedOption === 'created'">
     <!-- Wyświetl utworzone zestawy fiszek -->
-    <div *ngFor="let set of flashcardSets">
-      <h3>{{ set.title }}</h3>
-      <p>{{ set.description }}</p>
-      <p>Utworzono: {{ set.createdAt | date }}</p>
-      <button (click)="openSet(set.id)" class="btn btn-primary">Otwórz</button>
+    <div *ngFor="let set of flashcardSets" class="flashcard-set-container">
+      <div class="date-bar">
+        <p>{{ set.createdAt | date }}</p>
+        <div class="horizontal-bar"></div>
+      </div>
+      <a [routerLink]="['/set', set.id]" class="flashcard-set-link">
+        <div class="flashcard-set">
+          <div class="set-header">
+            <div class="profile-info">
+              <img src="profile.gif" alt="Profile Picture" class="profile-picture">
+              <p>{{ set.username }}</p>
+            </div>
+            <div class="set-info">
+              <p>{{ set.termCount }} pojęć</p>
+            </div>
+          </div>
+          <div class="set-footer">
+            <h3>{{ set.title }}</h3>
+          </div>
+        </div>
+      </a>
     </div>
   </div>
   <div *ngIf="selectedOption === 'recent'">
