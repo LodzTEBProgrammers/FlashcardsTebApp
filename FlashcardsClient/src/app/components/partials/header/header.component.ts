@@ -21,6 +21,11 @@ export class HeaderComponent {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
 
+  openFlashcardsSet() {
+   this.router.navigate(['/create']);
+   this.closeDropdown();
+  }
+
   closeDropdown() {
     this.isDropdownOpen = false;
   }

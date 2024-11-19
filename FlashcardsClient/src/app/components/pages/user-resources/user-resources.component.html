@@ -1,0 +1,9 @@
+<div class="container">
+  <h1>Twoje Zasoby</h1>
+  <div *ngFor="let set of flashcardSets" class="flashcard-set">
+    <h2>{{ set.title }}</h2>
+    <p>{{ set.description }}</p>
+    <p>Utworzono: {{ set.createdAt | date }}</p>
+    <button (click)="openSet(set.id)" class="btn btn-primary">Otwórz</button>
+  </div>
+</div>

@@ -1,43 +1,59 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import {Flashcard} from "../models/flashcard.model";
+import {BehaviorSubject, Observable, of} from 'rxjs';
+import {FlashcardSet} from "../interfaces/FlashcardSet";
+import {Flashcard} from "../interfaces/Flashcard";
 @Injectable({
   providedIn: 'root'
 })
 export class FlashcardService {
-  private flashcards: Flashcard[] = this.loadFlashcards();
-  private flashcards$ = new BehaviorSubject<Flashcard[]>(this.flashcards);
+  private flashcardSets: FlashcardSet[] = this.loadFlashcardSets();
+  private flashcardSets$ = new BehaviorSubject<FlashcardSet[]>(this.flashcardSets);
 
-  getFlashcards() {
-    return this.flashcards$.asObservable();
+  getFlashcardSets(): Observable<FlashcardSet[]> {
+    return this.flashcardSets$.asObservable();
   }
 
-  addFlashcard(flashcard: Flashcard) {
-    this.flashcards.push(flashcard);
-    this.saveFlashcards();
-    this.flashcards$.next(this.flashcards);
+  addFlashcardSet(set: FlashcardSet): void {
+    this.flashcardSets.push(set);
+    this.saveFlashcardSets();
+    this.flashcardSets$.next(this.flashcardSets);
   }
 
-  markAsRemembered(id: string) {
-    const flashcard = this.flashcards.find(f => f.id === id);
-    if (flashcard) {
-      flashcard.remembered = true;
-      this.flashcards$.next(this.flashcards);
+  addFlashcard(setId: string, flashcard: Flashcard): void {
+    const set = this.flashcardSets.find(s => s.id === setId);
+    if (set) {
+      set.flashcards.push(flashcard);
+      this.saveFlashcardSets();
+      this.flashcardSets$.next(this.flashcardSets);
     }
   }
 
-  deleteFlashcard(id: string) {
-    this.flashcards = this.flashcards.filter(f => f.id !== id);
-    this.saveFlashcards();
-    this.flashcards$.next(this.flashcards);
+  markAsRemembered(setId: string, flashcardId: string): void {
+    const set = this.flashcardSets.find(s => s.id === setId);
+    if (set) {
+      const flashcard = set.flashcards.find(f => f.id === flashcardId);
+      if (flashcard) {
+        flashcard.remembered = true;
+        this.flashcardSets$.next(this.flashcardSets);
+      }
+    }
   }
 
-  private saveFlashcards() {
-    localStorage.setItem('flashcards', JSON.stringify(this.flashcards));
+  deleteFlashcard(setId: string, flashcardId: string): void {
+    const set = this.flashcardSets.find(s => s.id === setId);
+    if (set) {
+      set.flashcards = set.flashcards.filter(f => f.id !== flashcardId);
+      this.saveFlashcardSets();
+      this.flashcardSets$.next(this.flashcardSets);
+    }
   }
 
-  private loadFlashcards(): Flashcard[] {
-    const flashcards = localStorage.getItem('flashcards');
-    return flashcards ? JSON.parse(flashcards) : [];
+  private saveFlashcardSets(): void {
+    localStorage.setItem('flashcardSets', JSON.stringify(this.flashcardSets));
+  }
+
+  private loadFlashcardSets(): FlashcardSet[] {
+    const sets = localStorage.getItem('flashcardSets');
+    return sets ? JSON.parse(sets) : [];
   }
 }

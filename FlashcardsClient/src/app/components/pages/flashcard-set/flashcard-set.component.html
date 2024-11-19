@@ -1,0 +1,8 @@
+<div *ngIf="flashcardSet">
+  <h1>{{ flashcardSet?.title }}</h1>
+  <p>{{ flashcardSet?.description }}</p>
+  <div *ngFor="let flashcard of flashcardSet?.flashcards">
+    <p><strong>Pojęcie:</strong> {{ flashcard.term }}</p>
+    <p><strong>Definicja:</strong> {{ flashcard.definition }}</p>
+  </div>
+</div>

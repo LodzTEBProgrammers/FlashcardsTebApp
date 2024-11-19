@@ -1,6 +1,13 @@
-<div>
-  <input placeholder="Termin" #term/>
-  <input placeholder="Definicja" #definition/>
-  <button (click)="addFlashcard(term.value, definition.value)">Dodaj fiszkę</button>
-</div>
+<div class="container">
+  <h1>Stwórz nowy zestaw fiszek</h1>
+  <input placeholder="Wpisz tytuł, na przykład Matematyka - Rozdział 5: Planimetria" [(ngModel)]="title" class="form-control"/>
+  <input placeholder="Dodaj opis..." [(ngModel)]="description" class="form-control"/>
 
+  <div *ngFor="let flashcard of flashcards; let i = index; trackBy: trackById" class="flashcard">
+    <input placeholder="Pojęcie" [(ngModel)]="flashcard.term" class="form-control"/>
+    <input placeholder="Definicja" [(ngModel)]="flashcard.definition" class="form-control"/>
+    <button (click)="removeFlashcard(i)" class="btn btn-danger">Usuń</button>
+  </div>
+  <button (click)="addFlashcard()" class="btn btn-primary">Dodaj fiszkę</button>
+  <button (click)="createSet()" class="btn btn-success">Stwórz</button>
+</div>

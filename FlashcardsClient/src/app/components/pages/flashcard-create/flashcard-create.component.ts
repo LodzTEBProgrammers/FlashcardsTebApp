@@ -1,37 +1,63 @@
-import { Component } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FlashcardService} from "../../../services/flashcard.service";
-import {Flashcard} from "../../../models/flashcard.model";
+import {Flashcard} from "../../../interfaces/Flashcard";
 import { v4 as uuidv4 } from 'uuid';
+import {FormsModule} from "@angular/forms";
+import {CommonModule} from "@angular/common";
+import {FlashcardSet} from "../../../interfaces/FlashcardSet";
 
 @Component({
   selector: 'app-flashcard-create',
   standalone: true,
-  imports: [],
+  imports: [FormsModule, CommonModule],
   templateUrl: './flashcard-create.component.html',
   styleUrl: './flashcard-create.component.css'
 })
-export class FlashcardCreateComponent {
+export class FlashcardCreateComponent implements OnInit {
   flashcards: Flashcard[] = [];
+  title: string = '';
+  description: string = '';
+
   constructor(private flashcardService: FlashcardService) {}
 
   ngOnInit() {
-    this.flashcardService.getFlashcards().subscribe(flashcards => {
-      this.flashcards = flashcards;
-    });
+    // Initialize flashcards if needed
+    if (this.flashcards.length === 0) {
+      this.addFlashcard();
+    }
   }
 
-  addFlashcard(term: string, definition: string) {
+  addFlashcard() {
     const newFlashcard: Flashcard = {
       id: uuidv4(),
-      term: term,
-      definition: definition,
+      term: '',
+      definition: '',
       remembered: false
     };
-    this.flashcardService.addFlashcard(newFlashcard);
-    console.log('Flashcard added:', newFlashcard);
+    this.flashcards.push(newFlashcard);
   }
 
-  markAsRemembered(id: string) {
-    this.flashcardService.markAsRemembered(id);
+  removeFlashcard(index: number) {
+    this.flashcards.splice(index, 1);
+  }
+
+  trackById(index: number, flashcard: Flashcard): string {
+    return flashcard.id;
+  }
+
+  createSet() {
+    if (this.title.trim() === '' || this.description.trim() === '') {
+      alert('Tytuł i opis nie mogą być puste');
+      return;
+    }
+
+    const newSet: FlashcardSet = {
+      id: uuidv4(),
+      title: this.title,
+      description: this.description,
+      flashcards: this.flashcards,
+      createdAt: new Date()
+    };
+    this.flashcardService.addFlashcardSet(newSet);
   }
 }
