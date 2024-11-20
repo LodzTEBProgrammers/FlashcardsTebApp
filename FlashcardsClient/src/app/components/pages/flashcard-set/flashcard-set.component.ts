@@ -1,15 +1,17 @@
-import {ChangeDetectorRef, Component, HostListener, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, HostListener, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FlashcardService} from "../../../services/flashcard.service";
 import {FlashcardSet} from "../../../interfaces/FlashcardSet";
 import {CommonModule} from "@angular/common";
 import confetti from 'canvas-confetti';
+
 @Component({
   selector: 'app-flashcard-set',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './flashcard-set.component.html',
-  styleUrl: './flashcard-set.component.css'
+  styleUrl: './flashcard-set.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FlashcardSetComponent implements OnInit {
   flashcardSet: FlashcardSet | undefined;
@@ -17,13 +19,17 @@ export class FlashcardSetComponent implements OnInit {
   currentIndex: number = 0;
   knownCards: boolean[] = [];
   showSummary: boolean = false;
+  feedbackMessage: string = '';
+  feedbackClass: string = '';
+  loading: boolean = false; // Add loading state
 
   constructor(
     private route: ActivatedRoute,
     private flashcardService: FlashcardService,
     private cdr: ChangeDetectorRef,
     private router: Router
-  ) {}
+  ) {
+  }
 
   ngOnInit() {
     const setId = this.route.snapshot.paramMap.get('id');
@@ -32,31 +38,63 @@ export class FlashcardSetComponent implements OnInit {
       if (this.flashcardSet) {
         this.flipped = new Array(this.flashcardSet.flashcards.length).fill(false);
         this.knownCards = new Array(this.flashcardSet.flashcards.length).fill(false);
+        this.cdr.markForCheck();
       }
     });
   }
 
   flipCard() {
     this.flipped[this.currentIndex] = !this.flipped[this.currentIndex];
-    this.cdr.detectChanges(); // Manually trigger change detection
+    this.cdr.markForCheck();
   }
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
-    if (event.code === 'Space') {
-      event.preventDefault();
-      this.flipCard();
+    if (this.loading) return; // Prevent action if loading
+
+    switch (event.key) {
+      case 'ArrowDown':
+        this.previousFlashcard();
+        this.highlightButton('previous');
+        break;
+      case 'ArrowRight':
+        this.markAsKnown();
+        this.highlightButton('known');
+        break;
+      case 'ArrowLeft':
+        this.markAsUnknown();
+        this.highlightButton('unknown');
+        break;
+      case 'ArrowUp':
+        this.resetFlashcards();
+        this.highlightButton('reset');
+        break;
+      case ' ':
+        this.flipCard();
+        break;
     }
   }
 
   markAsKnown() {
+    if (this.loading) return; // Prevent action if loading
     this.knownCards[this.currentIndex] = true;
-    this.nextCard();
+    this.showFeedback('Umiem', 'known');
+    this.loading = true;
+    setTimeout(() => {
+      this.nextCard();
+      this.loading = false;
+    }, 1000); // Add delay
   }
 
   markAsUnknown() {
+    if (this.loading) return; // Prevent action if loading
     this.knownCards[this.currentIndex] = false;
-    this.nextCard();
+    this.showFeedback('Wciąż się uczę', 'unknown');
+    this.loading = true;
+    setTimeout(() => {
+      this.nextCard();
+      this.loading = false;
+    }, 1000); // Add delay
   }
 
   nextCard() {
@@ -65,12 +103,15 @@ export class FlashcardSetComponent implements OnInit {
     } else {
       this.checkCompletion();
     }
+    this.cdr.markForCheck();
   }
 
-  prevCard() {
+  previousFlashcard() {
+    if (this.loading) return; // Prevent action if loading
     if (this.currentIndex > 0) {
       this.currentIndex--;
     }
+    this.cdr.markForCheck();
   }
 
   checkCompletion() {
@@ -79,6 +120,7 @@ export class FlashcardSetComponent implements OnInit {
       if (this.knownCards.every(card => card)) {
         this.launchConfetti(); // Launch confetti if all cards are known
       }
+      this.cdr.markForCheck();
     }
   }
 
@@ -87,6 +129,7 @@ export class FlashcardSetComponent implements OnInit {
     this.knownCards.fill(false);
     this.currentIndex = 0;
     this.showSummary = false;
+    this.cdr.markForCheck();
   }
 
   getKnownCount(): number {
@@ -135,7 +178,39 @@ export class FlashcardSetComponent implements OnInit {
     confetti({
       particleCount: 100,
       spread: 70,
-      origin: { x: 0.5, y: 0.5 }
+      origin: {x: 0.5, y: 0.5}
     });
+  }
+
+  showFeedback(message: string, cssClass: string) {
+    this.feedbackMessage = message;
+    this.feedbackClass = cssClass;
+    this.cdr.detectChanges();
+    setTimeout(() => {
+      this.feedbackMessage = '';
+      this.feedbackClass = '';
+      this.cdr.detectChanges();
+    }, 1000);
+  }
+
+
+  highlightButton(buttonType: 'previous' | 'known' | 'unknown' | 'reset') {
+    const buttons: { [key in 'previous' | 'known' | 'unknown' | 'reset']: string } = {
+      previous: 'btn-previous',
+      known: 'btn-known',
+      unknown: 'btn-unknown',
+      reset: 'btn-reset'
+    };
+
+    const button = document.querySelector(`.${buttons[buttonType]}`);
+    if (button) {
+      button.classList.add('highlight');
+    }
+
+    setTimeout(() => {
+      if (button) {
+        button.classList.remove('highlight');
+      }
+    }, 800); // Adjust the delay to match the loading time
   }
 }

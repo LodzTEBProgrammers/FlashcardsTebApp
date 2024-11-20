@@ -16,9 +16,14 @@
       </div>
     </div>
     <div class="navigation">
-      <button (click)="markAsUnknown()" class="btn btn-outline-danger">❌</button>
+      <button (click)="previousFlashcard()" class="btn btn-outline-secondary btn-previous" [disabled]="loading" title="Cofnij">⬅️</button>
+      <button (click)="markAsUnknown()" class="btn btn-outline-danger btn-unknown" [disabled]="loading" title="Down Arrow">❌</button>
       <span>{{ currentIndex + 1 }} / {{ flashcardSet.flashcards.length }}</span>
-      <button (click)="markAsKnown()" class="btn btn-outline-success">✅</button>
+      <button (click)="markAsKnown()" class="btn btn-outline-success btn-known" [disabled]="loading" title="Right Arrow">✅</button>
+      <button (click)="resetFlashcards()" class="btn btn-outline-warning btn-reset" [disabled]="loading" title="Up Arrow">🔄</button>
+    </div>
+    <div *ngIf="feedbackMessage" [ngClass]="feedbackClass" class="feedback">
+      {{ feedbackMessage }}
     </div>
   </div>
   <div *ngIf="showSummary" class="summary">
@@ -67,10 +72,10 @@
     <p>Umiem: {{ getKnownCount() }}</p>
     <p>Wciąż się uczę: {{ getUnknownCount() }}</p>
     <p>Liczba pozostałych pojęć: {{ getRemainingCount() }}</p>
-    <button (click)="resetFlashcards()" class="btn">Zresetuj fiszki</button>
-    <button (click)="practiceWithQuestions($event)" class="btn practice-btn">
+    <button (click)="resetFlashcards()" class="btn" [disabled]="loading">Zresetuj fiszki</button>
+    <button (click)="practiceWithQuestions($event)" class="btn practice-btn" [disabled]="loading">
       Ćwicz z pytaniami
     </button>
   </div>
-  <button (click)="editFlashcardSet()" class="btn btn-primary">Edytuj zestaw</button>
+  <button (click)="editFlashcardSet()" class="btn btn-primary" [disabled]="loading">Edytuj zestaw</button>
 </div>

@@ -46,8 +46,8 @@ export class FlashcardCreateComponent implements OnInit {
   }
 
   createSet() {
-    if (this.title.trim() === '' || this.description.trim() === '') {
-      alert('Tytuł i opis nie mogą być puste');
+    if (this.title.trim() === '') {
+      alert('Tytuł nie może być pusty');
       return;
     }
 
