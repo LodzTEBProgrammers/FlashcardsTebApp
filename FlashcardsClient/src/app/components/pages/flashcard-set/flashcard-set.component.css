@@ -1,0 +1,147 @@
+.flashcard {
+  perspective: 1000px;
+  margin-bottom: 20px;
+}
+
+.flashcard-inner {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  height: 200px;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.flipped {
+  transform: rotateY(180deg);
+}
+
+.flashcard-front, .flashcard-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.flashcard-front {
+  background-color: #fff;
+}
+
+.flashcard-back {
+  background-color: #f8f8f8;
+  transform: rotateY(180deg);
+}
+
+.shortcut-info {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+}
+
+.shortcut-info i {
+  margin-right: 5px;
+}
+
+.btn-outline-danger:hover {
+  color: #fff;
+  background-color: #ffd6d6;
+  border-color: #dc3545;
+}
+
+.checkmark {
+  fill: #58e8b5; /* Fill the checkmark with green color */
+  stroke: #58e8b5;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: scale(1.5); /* Adjust the size of the checkmark */
+  transform-origin: center;
+}
+
+circular-chart {
+  display: block;
+  margin: 10px auto;
+  max-width: 100%;
+  max-height: 100%;
+  position: relative;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: #eee;
+  stroke-width: 3.8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  animation: progress 1s ease-out forwards;
+}
+
+.circle.correct {
+  stroke: #58e8b5;
+  stroke-dasharray: 100 0; /* Ensure full circle is green */
+}
+
+.circle.incorrect {
+  stroke: #ea9c5d;
+  transform: rotate(90deg);
+  transform-origin: center;
+}
+
+.percentage {
+  fill: #000;
+  font-size: 0.5em;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+
+/* Media queries for responsive design */
+@media (max-width: 600px) {
+  .circular-chart {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (min-width: 601px) and (max-width: 1200px) {
+  .circular-chart {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+@media (min-width: 1201px) {
+  .circular-chart {
+    width: 80px;
+    height: 80px;
+  }
+}
+
+
+
+.practice-btn {
+  position: relative;
+  background-color: #4355ff;
+  color: white;
+  margin-top: 10px;
+  overflow: visible;
+}
