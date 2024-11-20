@@ -6,22 +6,36 @@
       <div class="flashcard-inner" [class.flipped]="flipped[currentIndex]">
         <div class="flashcard-front">
           <p><strong>Pojęcie:</strong> {{ flashcardSet.flashcards[currentIndex].term }}</p>
+          <div class="shortcut-info">
+            <i class="bi bi-keyboard"></i> Skrót klawiszowy: Naciśnij spację lub kliknij na fiszkę, aby ją obrócić
+          </div>
         </div>
         <div class="flashcard-back">
           <p><strong>Definicja:</strong> {{ flashcardSet.flashcards[currentIndex].definition }}</p>
-          <p class="shortcut-info">
+          <div class="shortcut-info">
             <i class="bi bi-keyboard"></i> Skrót klawiszowy: Naciśnij spację lub kliknij na fiszkę, aby ją obrócić
-          </p>
+          </div>
         </div>
       </div>
     </div>
     <div class="navigation">
-      <button (click)="previousFlashcard()" class="btn btn-outline-secondary btn-previous" [disabled]="loading" title="Cofnij">⬅️</button>
-      <button (click)="markAsUnknown()" class="btn btn-outline-danger btn-unknown" [disabled]="loading" title="Down Arrow">❌</button>
+      <button (click)="previousFlashcard()" class="btn btn-outline-secondary btn-previous" [disabled]="loading" title="⬇️">
+        ⬅️
+      </button>
+      <button (click)="markAsUnknown()" class="btn btn-outline-danger btn-unknown" [disabled]="loading" title="←">
+        ❌️
+      </button>
       <span>{{ currentIndex + 1 }} / {{ flashcardSet.flashcards.length }}</span>
-      <button (click)="markAsKnown()" class="btn btn-outline-success btn-known" [disabled]="loading" title="Right Arrow">✅</button>
-      <button (click)="resetFlashcards()" class="btn btn-outline-warning btn-reset" [disabled]="loading" title="Up Arrow">🔄</button>
+      <button (click)="markAsKnown()" class="btn btn-outline-success btn-known" [disabled]="loading" title="→">
+        ✅
+      </button>
+      <button (click)="resetFlashcards()" class="btn btn-outline-warning btn-reset" [disabled]="loading" title="↑">
+        🔄
+      </button>
     </div>
+    <button (click)="toggleNarrator()" class="btn btn-secondary" [disabled]="loading">
+      <i [ngClass]="narratorEnabled ? 'bi bi-volume-mute' : 'bi bi-volume-up'"></i>
+    </button>
     <div *ngIf="feedbackMessage" [ngClass]="feedbackClass" class="feedback">
       {{ feedbackMessage }}
     </div>

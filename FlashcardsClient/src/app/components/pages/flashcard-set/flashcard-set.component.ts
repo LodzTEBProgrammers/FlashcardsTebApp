@@ -22,6 +22,7 @@ export class FlashcardSetComponent implements OnInit {
   feedbackMessage: string = '';
   feedbackClass: string = '';
   loading: boolean = false; // Add loading state
+  narratorEnabled: boolean = false; // Add narrator state
 
   constructor(
     private route: ActivatedRoute,
@@ -212,5 +213,28 @@ export class FlashcardSetComponent implements OnInit {
         button.classList.remove('highlight');
       }
     }, 800); // Adjust the delay to match the loading time
+  }
+
+  toggleNarrator() {
+    this.narratorEnabled = !this.narratorEnabled;
+    if (this.narratorEnabled) {
+      this.readFlashcard();
+    } else {
+      speechSynthesis.cancel(); // Stop any ongoing speech
+    }
+
+  }
+
+  readFlashcard(event?: Event) {
+    if (event) {
+      event.stopPropagation(); // Prevent the click event from propagating
+    }
+    if (!this.flashcardSet) return;
+    const textToRead = this.flipped[this.currentIndex]
+      ? this.flashcardSet.flashcards[this.currentIndex].definition
+      : this.flashcardSet.flashcards[this.currentIndex].term;
+    const utterance = new SpeechSynthesisUtterance(textToRead);
+    utterance.lang = 'pl-PL'; // Set language to Polish
+    speechSynthesis.speak(utterance);
   }
 }
