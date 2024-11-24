@@ -283,6 +283,7 @@ circular-chart {
   background-color: white;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
   z-index: 1;
+  right: 0; /* Position the dropdown menu to the right */
 }
 
 .dropdown-menu.show {
@@ -292,6 +293,7 @@ circular-chart {
 .dropdown-item {
   padding: 8px 16px;
   cursor: pointer;
+  font-weight: 600; /* Make the font bold */
 }
 
 .dropdown-item:hover {
@@ -300,4 +302,12 @@ circular-chart {
 
 .dropdown-item.text-danger {
   color: red;
+}
+
+.dropdown-toggle::after {
+  display: none; /* Hide the default caret */
+}
+
+.dropdown-item i {
+  margin: 15px;
 }
