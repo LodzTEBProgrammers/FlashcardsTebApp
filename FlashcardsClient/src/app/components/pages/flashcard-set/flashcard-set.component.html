@@ -91,5 +91,35 @@
       Ćwicz z pytaniami
     </button>
   </div>
-  <button (click)="editFlashcardSet()" class="btn btn-primary" [disabled]="loading">Edytuj zestaw</button>
+  <button (click)="editFlashcardSet()" class="btn btn-primary" [disabled]="loading">
+    <i class="bi bi-pencil"></i>
+  </button>
+  <div class="dropdown" [class.show]="dropdownOpen">
+    <button (click)="toggleDropdown()" class="btn btn-secondary dropdown-toggle" [disabled]="loading">
+      <i class="bi bi-three-dots"></i>
+    </button>
+    <div class="dropdown-menu" [class.show]="dropdownOpen">
+      <button class="dropdown-item" (click)="addToFolder()">
+        <i class="bi bi-folder"></i> Dodaj do folderu
+      </button>
+      <button class="dropdown-item" (click)="saveAndEdit()">
+        <i class="bi bi-save"></i> Zapisz i edytuj
+      </button>
+      <button class="dropdown-item" (click)="print()">
+        <i class="bi bi-printer"></i> Drukuj
+      </button>
+      <button class="dropdown-item" (click)="connect()">
+        <i class="bi bi-link"></i> Połącz
+      </button>
+      <button class="dropdown-item" (click)="export()">
+        <i class="bi bi-box-arrow-up"></i> Eksport
+      </button>
+      <button class="dropdown-item" (click)="embed()">
+        <i class="bi bi-code"></i> Osadź
+      </button>
+      <button class="dropdown-item text-danger" (click)="deleteSet()">
+        <i class="bi bi-trash"></i> Usuń
+      </button>
+    </div>
+  </div>
 </div>

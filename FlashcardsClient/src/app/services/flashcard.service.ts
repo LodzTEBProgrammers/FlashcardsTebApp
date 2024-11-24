@@ -39,13 +39,10 @@ export class FlashcardService {
     }
   }
 
-  deleteFlashcard(setId: string, flashcardId: string): void {
-    const set = this.flashcardSets.find(s => s.id === setId);
-    if (set) {
-      set.flashcards = set.flashcards.filter(f => f.id !== flashcardId);
-      this.saveFlashcardSets();
-      this.flashcardSets$.next(this.flashcardSets);
-    }
+  deleteFlashcardSet(setId: string): void {
+    this.flashcardSets = this.flashcardSets.filter(set => set.id !== setId);
+    this.saveFlashcardSets();
+    this.flashcardSets$.next(this.flashcardSets);
   }
 
   private saveFlashcardSets(): void {

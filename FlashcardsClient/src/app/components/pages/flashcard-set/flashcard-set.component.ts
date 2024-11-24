@@ -23,6 +23,7 @@ export class FlashcardSetComponent implements OnInit {
   feedbackClass: string = '';
   loading: boolean = false; // Add loading state
   narratorEnabled: boolean = false; // Add narrator state
+  dropdownOpen: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -236,5 +237,42 @@ export class FlashcardSetComponent implements OnInit {
     const utterance = new SpeechSynthesisUtterance(textToRead);
     utterance.lang = 'pl-PL'; // Set language to Polish
     speechSynthesis.speak(utterance);
+  }
+
+  toggleDropdown() {
+    this.dropdownOpen = !this.dropdownOpen;
+  }
+
+  addToFolder() {
+    // Implement the logic for adding to folder
+  }
+
+  saveAndEdit() {
+    // Implement the logic for saving and editing
+  }
+
+  print() {
+    // Implement the logic for printing
+  }
+
+  connect() {
+    // Implement the logic for connecting
+  }
+
+  export() {
+    // Implement the logic for exporting
+  }
+
+  embed() {
+    // Implement the logic for embedding
+  }
+
+  deleteSet() {
+    if (confirm('Czy na pewno chcesz usunąć ten zestaw fiszek?')) {
+      this.loading = true;
+      this.flashcardService.deleteFlashcardSet(this.flashcardSet!.id);
+      this.loading = false;
+      this.router.navigate(['/resources']);
+    }
   }
 }
