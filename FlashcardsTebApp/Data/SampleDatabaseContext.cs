@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FlashcardsServer.Models;
+using Microsoft.EntityFrameworkCore;
 
 public class SampleDatabaseContext : DbContext
 {
@@ -8,6 +9,5 @@ public class SampleDatabaseContext : DbContext
     {
     }
 
-    // Define your DbSets here
-    // public DbSet<YourEntity> YourEntities { get; set; }
+    public DbSet<User> Users { get; set; }
 }

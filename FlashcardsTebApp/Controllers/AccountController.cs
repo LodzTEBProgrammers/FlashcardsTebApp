@@ -10,25 +10,31 @@ namespace FlashcardsTebApp.Controllers;
 [Route("[controller]")]
 public class AccountController : ControllerBase
 {
-    private static List<User> users = new();
+    private readonly SampleDatabaseContext _context;
     private readonly PasswordHasher<User> _passwordHasher = new();
+
+    public AccountController(SampleDatabaseContext context)
+    {
+        _context = context;
+    }
 
     [HttpPost("register")]
     public IActionResult Register([FromBody] User user)
     {
-        if (users.Any(u => u.Username == user.Username))
+        if (_context.Users.Any(u => u.Username == user.Username))
             return BadRequest("Username already exists.");
 
-        user.Id = users.Count + 1;
         user.Password = _passwordHasher.HashPassword(user, user.Password);
-        users.Add(user);
+        _context.Users.Add(user);
+        _context.SaveChanges();
         return Ok("User registered successfully.");
     }
 
     [HttpPost("login")]
     public IActionResult Login([FromBody] User login)
     {
-        User? user = users.SingleOrDefault(u => u.Username == login.Username);
+        User? user =
+            _context.Users.SingleOrDefault(u => u.Username == login.Username);
         if (user == null ||
             _passwordHasher.VerifyHashedPassword(user, user.Password,
                 login.Password) == PasswordVerificationResult.Failed)
