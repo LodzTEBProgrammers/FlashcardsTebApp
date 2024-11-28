@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/f421e97d-f84b-4709-9ef5-b72ee9915dcc/resourceGroups/rg1/providers/Microsoft.Web/sites/FlashcardsTebAppClient",
+    "appService.deploySubpath": "dist\\flashcards-client\\browser"
+}

@@ -33,7 +33,6 @@ builder.Services.AddDbContext<SampleDatabaseContext>(options =>
     options.UseSqlServer(
         client.GetSecret("ProdConnection").Value.Value.ToString()));
 
-
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy",
@@ -47,12 +46,14 @@ WebApplication app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // Configure the HTTP request pipeline.
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
+
+// Apply the CORS policy
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

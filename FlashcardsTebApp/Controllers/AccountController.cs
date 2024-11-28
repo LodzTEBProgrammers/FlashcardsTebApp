@@ -22,12 +22,12 @@ public class AccountController : ControllerBase
     public IActionResult Register([FromBody] User user)
     {
         if (_context.Users.Any(u => u.Username == user.Username))
-            return BadRequest("Username already exists.");
+            return BadRequest(new { message = "Username already exists." });
 
         user.Password = _passwordHasher.HashPassword(user, user.Password);
         _context.Users.Add(user);
         _context.SaveChanges();
-        return Ok("User registered successfully.");
+        return Ok(new { message = "User registered successfully." });
     }
 
     [HttpPost("login")]
@@ -38,8 +38,9 @@ public class AccountController : ControllerBase
         if (user == null ||
             _passwordHasher.VerifyHashedPassword(user, user.Password,
                 login.Password) == PasswordVerificationResult.Failed)
-            return Unauthorized("Invalid username or password.");
+            return Unauthorized(new
+                { message = "Invalid username or password." });
 
-        return Ok("Login successful.");
+        return Ok(new { message = "Login successful." });
     }
 }
