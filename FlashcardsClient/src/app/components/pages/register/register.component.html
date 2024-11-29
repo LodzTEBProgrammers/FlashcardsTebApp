@@ -1,12 +1,17 @@
-<h2>Register</h2>
 <form (ngSubmit)="register()">
   <div>
     <label for="username">Username:</label>
     <input type="text" id="username" [(ngModel)]="user.username" name="username" required>
+    <div *ngIf="errorMessages['Username']" class="error">
+      <div *ngFor="let error of errorMessages['Username']">{{ error }}</div>
+    </div>
   </div>
   <div>
     <label for="password">Password:</label>
     <input type="password" id="password" [(ngModel)]="user.password" name="password" required>
+    <div *ngIf="errorMessages['Password']" class="error">
+      <div *ngFor="let error of errorMessages['Password']">{{ error }}</div>
+    </div>
   </div>
   <button type="submit">Register</button>
 </form>

@@ -1,11 +1,12 @@
 import {Component, ElementRef, HostListener, ViewChild} from '@angular/core';
 import {Router, RouterLink} from "@angular/router";
 import {Modal} from "bootstrap";
+import {LogoutComponent} from "../logout/logout.component";
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, LogoutComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })

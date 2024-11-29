@@ -28,11 +28,22 @@ public class AccountController : ControllerBase
         _logger.LogInformation("Register attempt for username: {Username}",
             user.Username);
 
+        if (!ModelState.IsValid)
+        {
+            List<string> errors = ModelState.Values.SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage)
+                .ToList();
+            return BadRequest(new { errors });
+        }
+
         if (_context.Users.Any(u => u.Username == user.Username))
         {
             _logger.LogWarning("Username already exists: {Username}",
                 user.Username);
-            return BadRequest(new { message = "Username already exists." });
+            return BadRequest(new
+            {
+                errors = new { Username = new[] { "Username already exists." } }
+            });
         }
 
         user.Password = _passwordHasher.HashPassword(user, user.Password);
@@ -64,5 +75,14 @@ public class AccountController : ControllerBase
         _logger.LogInformation("Login successful for username: {Username}",
             login.Username);
         return Ok(new { message = "Login successful." });
+    }
+
+    [HttpPost("logout")]
+    public IActionResult Logout()
+    {
+        _logger.LogInformation("Logout attempt");
+
+        _logger.LogInformation("Logout successful");
+        return Ok(new { message = "Logout successful." });
     }
 }

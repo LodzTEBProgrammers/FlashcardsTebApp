@@ -1,5 +1,8 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using FlashcardsServer.Identity;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
@@ -48,6 +51,22 @@ try
     builder.Logging.AddConsole();
     builder.Logging.AddDebug();
 
+    // Identity
+    builder.Services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+        {
+            options.Password.RequiredLength = 8;
+            options.Password.RequireNonAlphanumeric = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireLowercase = true;
+            options.Password.RequireDigit = true;
+        })
+        .AddEntityFrameworkStores<SampleDatabaseContext>()
+        .AddDefaultTokenProviders()
+        .AddUserStore<UserStore<ApplicationUser, ApplicationRole,
+            SampleDatabaseContext, Guid>>()
+        .AddRoleStore<
+            RoleStore<ApplicationRole, SampleDatabaseContext, Guid>>();
+
     WebApplication app = builder.Build();
 
     // Configure the HTTP request pipeline.
@@ -57,9 +76,11 @@ try
 
     app.UseHttpsRedirection();
 
+    app.UseRouting();
     // Apply the CORS policy
     app.UseCors("CorsPolicy");
 
+    app.UseAuthentication();
     app.UseAuthorization();
 
     app.MapControllers();
