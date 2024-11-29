@@ -1,12 +1,14 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using FlashcardsServer.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.IdentityModel.Tokens;
 
 try
 {
@@ -67,11 +69,40 @@ try
         .AddRoleStore<
             RoleStore<ApplicationRole, SampleDatabaseContext, Guid>>();
 
+    // Set the Issuer based on the environment
+    if (builder.Environment.IsDevelopment())
+    {
+        builder.Configuration["Jwt:Issuer"] = "https://localhost:7285";
+        builder.Configuration["Jwt:Audience"] = "http://localhost:4200";
+    } else
+    {
+        builder.Configuration["Jwt:Issuer"] =
+            "https://flashcardstebapp.azurewebsites.net";
+        builder.Configuration["Jwt:Audience"] =
+            "https://flashcardstebappclient.azurewebsites.net";
+    }
+
+    // Configure JWT authentication
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme =
+                JwtBearerDefaults.AuthenticationScheme;
+        }) // Configure the JWT Bearer authentication
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = builder.Configuration["Jwt:Issuer"]
+                // Other token validation parameters
+            };
+        });
+
     WebApplication app = builder.Build();
 
     // Configure the HTTP request pipeline.
-    app.UseHsts();
-    app.UseHttpsRedirection();
     app.UseStaticFiles();
 
     app.UseSwagger();
