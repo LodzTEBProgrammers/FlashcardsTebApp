@@ -1,6 +1,8 @@
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using FlashcardsServer.Identity;
+using FlashcardsServer.ServiceContracts;
+using FlashcardsServer.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -20,6 +22,8 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
+    builder.Services.AddTransient<IJwtService, JwtService>();
 
     IConfigurationSection keyVaultURL =
         builder.Configuration.GetSection("KeyVault:KeyVaultURL");

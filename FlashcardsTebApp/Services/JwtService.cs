@@ -47,8 +47,21 @@ public class JwtService : IJwtService
 
         // Retrieve the symmetric key from Azure Key Vault
         KeyVaultSecret secret = _secretClient.GetSecret("JwtSymmetricKey");
-        SymmetricSecurityKey securityKey =
-            new(Convert.FromBase64String(secret.Value));
+        string secretValue = secret.Value;
+
+        // Validate the Base-64 string
+        byte[] keyBytes;
+        try
+        {
+            keyBytes = Convert.FromBase64String(secretValue);
+        }
+        catch (FormatException)
+        {
+            throw new InvalidOperationException(
+                "The retrieved secret is not a valid Base-64 string.");
+        }
+
+        SymmetricSecurityKey securityKey = new(keyBytes);
 
         SigningCredentials signingCredentials =
             new(securityKey, SecurityAlgorithms.HmacSha256);
@@ -61,8 +74,7 @@ public class JwtService : IJwtService
             signingCredentials : signingCredentials
         );
 
-        string token = new JwtSecurityTokenHandler()
-            .WriteToken(tokenGenerator);
+        string token = new JwtSecurityTokenHandler().WriteToken(tokenGenerator);
 
         return new AuthenticationResponse()
         {

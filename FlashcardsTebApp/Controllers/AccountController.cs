@@ -1,5 +1,6 @@
 ﻿using FlashcardsServer.DTO;
 using FlashcardsServer.Identity;
+using FlashcardsServer.ServiceContracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,15 +17,18 @@ public class AccountController : ControllerBase
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IJwtService _jwtService;
 
     public AccountController(UserManager<ApplicationUser> userManager,
                              SignInManager<ApplicationUser> signInManager,
-                             RoleManager<ApplicationRole> roleManager
+                             RoleManager<ApplicationRole> roleManager,
+                             IJwtService jwtService
     )
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
+        _jwtService = jwtService;
     }
 
     [HttpPost]
@@ -58,7 +62,10 @@ public class AccountController : ControllerBase
             // Sign in
             await _signInManager.SignInAsync(user, false);
 
-            return Ok(user);
+            AuthenticationResponse authenticationResponse =
+                _jwtService.CreateJwtToken(user);
+
+            return Ok(authenticationResponse);
         } else
         {
             string errorMessage = string.Join(" | ",
@@ -107,11 +114,13 @@ public class AccountController : ControllerBase
             if (user == null)
                 return NoContent();
 
-            return Ok(new
-            {
-                personName = user.PersonName,
-                email = user.Email
-            });
+            // Sign in
+            await _signInManager.SignInAsync(user, false);
+
+            AuthenticationResponse authenticationResponse =
+                _jwtService.CreateJwtToken(user);
+
+            return Ok(authenticationResponse);
         }
 
         return BadRequest("Niepoprawne dane logowania");
