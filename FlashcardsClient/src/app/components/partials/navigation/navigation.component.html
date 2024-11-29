@@ -11,11 +11,14 @@
     <app-header></app-header>
 
     <ul class="nav ms-auto">
-      <li class="nav-item">
-        <a class="nav-link text-white" [routerLink]="['/login']" routerLinkActive="active-link">Login</a>
+      <li class="nav-item" *ngIf="!accountService.currentUserName">
+        <a class="nav-link text-white" [routerLink]="['/login']" routerLinkActive="active-link">Logowanie</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" [routerLink]="['/register']" routerLinkActive="active-link">Register</a>
+      <li class="nav-item" *ngIf="!accountService.currentUserName">
+        <a class="nav-link text-white" [routerLink]="['/register']" routerLinkActive="active-link">Rejestracja</a>
+      </li>
+      <li class="nav-item" *ngIf="accountService.currentUserName">
+        <a class="nav-link text-white" href="#" onclick="return false" (click)="onLogOutClicked()">Wyloguj</a>
       </li>
     </ul>
   </div>
