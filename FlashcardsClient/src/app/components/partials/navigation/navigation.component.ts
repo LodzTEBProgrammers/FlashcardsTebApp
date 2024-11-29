@@ -19,6 +19,8 @@ export class NavigationComponent {
       next: (response: string) => {
         this.accountService.currentUserName = null;
 
+        localStorage.removeItem("token");
+
         this.router.navigate([ '/login' ]);
       },
 

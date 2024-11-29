@@ -1,11 +1,15 @@
+using System.Text;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using FlashcardsServer.Identity;
 using FlashcardsServer.ServiceContracts;
 using FlashcardsServer.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
@@ -17,11 +21,19 @@ try
     WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
-    builder.Services.AddControllers();
+    builder.Services.AddControllers(options =>
+    {
+        // Authorization policy
+        AuthorizationPolicy policy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build();
+        options.Filters.Add(new AuthorizeFilter(policy));
+    });
 
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
 
     builder.Services.AddTransient<IJwtService, JwtService>();
 
@@ -86,23 +98,45 @@ try
             "https://flashcardstebappclient.azurewebsites.net";
     }
 
-    // Configure JWT authentication
+    // JWT 
     builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultChallengeScheme =
+            CookieAuthenticationDefaults.AuthenticationScheme;
+    }).AddJwtBearer(options =>
+    {
+        // Retrieve the symmetric key from Azure Key Vault
+        KeyVaultSecret secret = client.GetSecret("JwtSymmetricKey");
+        string secretValue = secret.Value;
+
+        // Validate the Base-64 string
+        byte[] keyBytes;
+        try
         {
-            options.DefaultAuthenticateScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme =
-                JwtBearerDefaults.AuthenticationScheme;
-        }) // Configure the JWT Bearer authentication
-        .AddJwtBearer(options =>
+            keyBytes = Convert.FromBase64String(secretValue);
+        }
+        catch (FormatException)
         {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidIssuer = builder.Configuration["Jwt:Issuer"]
-                // Other token validation parameters
-            };
-        });
+            throw new InvalidOperationException(
+                "The retrieved secret is not a valid Base-64 string.");
+        }
+
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes)
+        };
+    });
+
+    builder.Services.AddAuthorization(options => { });
 
     WebApplication app = builder.Build();
 
