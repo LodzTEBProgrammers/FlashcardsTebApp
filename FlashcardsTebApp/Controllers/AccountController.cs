@@ -1,88 +1,79 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlashcardsServer.DTO;
+using FlashcardsServer.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using FlashcardsServer.Models;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FlashcardsTebApp.Controllers;
 
+[AllowAnonymous]
 [ApiController]
 [Route("[controller]")]
 public class AccountController : ControllerBase
 {
-    private readonly SampleDatabaseContext _context;
-    private readonly PasswordHasher<User> _passwordHasher = new();
-    private readonly ILogger<AccountController> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
 
-    public AccountController(SampleDatabaseContext context,
-                             ILogger<AccountController> logger
+    public AccountController(UserManager<ApplicationUser> userManager,
+                             SignInManager<ApplicationUser> signInManager,
+                             RoleManager<ApplicationRole> roleManager
     )
     {
-        _context = context;
-        _logger = logger;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
     }
 
-    [HttpPost("register")]
-    public IActionResult Register([FromBody] User user)
+    [HttpPost]
+    public async Task<ActionResult<ApplicationUser>> PostRegister(
+        RegisterDTO registerDTO
+    )
     {
-        _logger.LogInformation("Register attempt for username: {Username}",
-            user.Username);
-
-        if (!ModelState.IsValid)
+        // Validation 
+        if (ModelState.IsValid == false)
         {
-            List<string> errors = ModelState.Values.SelectMany(v => v.Errors)
-                .Select(e => e.ErrorMessage)
-                .ToList();
-            return BadRequest(new { errors });
+            string errorMessage = string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+
+            return BadRequest(errorMessage);
         }
 
-        if (_context.Users.Any(u => u.Username == user.Username))
+        // Create  user 
+        ApplicationUser user = new()
         {
-            _logger.LogWarning("Username already exists: {Username}",
-                user.Username);
-            return BadRequest(new
-            {
-                errors = new { Username = new[] { "Username already exists." } }
-            });
-        }
+            Email = registerDTO.Email,
+            UserName = registerDTO.Email,
+            PersonName = registerDTO.PersonName
+        };
 
-        user.Password = _passwordHasher.HashPassword(user, user.Password);
-        _context.Users.Add(user);
-        _context.SaveChanges();
-        _logger.LogInformation("User registered successfully: {Username}",
-            user.Username);
-        return Ok(new { message = "User registered successfully." });
+        IdentityResult result =
+            await _userManager.CreateAsync(user, registerDTO.Password);
+
+        if (result.Succeeded)
+        {
+            // Sign in
+            await _signInManager.SignInAsync(user, false);
+
+            return Ok(user);
+        } else
+        {
+            string errorMessage = string.Join(" | ",
+                result.Errors.Select(e => e.Description)); // Error1 | Error2
+
+            return BadRequest(errorMessage);
+        }
     }
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] User login)
+    [HttpGet]
+    public async Task<IActionResult> IsEmailAlreadyRegister(string email)
     {
-        _logger.LogInformation("Login attempt for username: {Username}",
-            login.Username);
+        ApplicationUser user = await _userManager.FindByEmailAsync(email);
 
-        User? user =
-            _context.Users.SingleOrDefault(u => u.Username == login.Username);
-        if (user == null ||
-            _passwordHasher.VerifyHashedPassword(user, user.Password,
-                login.Password) == PasswordVerificationResult.Failed)
-        {
-            _logger.LogWarning("Invalid login attempt for username: {Username}",
-                login.Username);
-            return Unauthorized(new
-                { message = "Invalid username or password." });
-        }
-
-        _logger.LogInformation("Login successful for username: {Username}",
-            login.Username);
-        return Ok(new { message = "Login successful." });
-    }
-
-    [HttpPost("logout")]
-    public IActionResult Logout()
-    {
-        _logger.LogInformation("Logout attempt");
-
-        _logger.LogInformation("Logout successful");
-        return Ok(new { message = "Logout successful." });
+        if (user == null)
+            return Ok(true);
+        else
+            return Ok(false);
     }
 }
