@@ -1,43 +1,71 @@
 import { Component } from '@angular/core';
 import { AccountService } from '../../../services/account.service';
-import { FormsModule } from '@angular/forms';
+import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import {Router} from "@angular/router";
+import {RegisterUser} from "../../../models/register-user";
+import {CompareValidation} from "../../../validators/comparing-passwords-validator";
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
 export class RegisterComponent {
-  user = { username: '', password: '' };
-  errorMessages: { [key: string]: string[] } = {};
+  registerForm: FormGroup;
+  isRegisterFormSubmitted: boolean = false;
 
-  constructor(private accountService: AccountService) {}
-
-  register() {
-    this.accountService.register(this.user).subscribe(
-      response => {
-        console.log('User registered successfully', response);
-        this.errorMessages = {};
-      },
-      error => {
-        console.error('Error registering user', error);
-        this.errorMessages = this.parseValidationErrors(error);
-      }
-    );
+  constructor(private accountService: AccountService, private router: Router) {
+   this.registerForm = new FormGroup({
+     personName: new FormControl(null, [Validators.required]),
+      email: new FormControl(null, [Validators.required, Validators.email]),
+      password: new FormControl(null, [Validators.required]),
+      confirmPassword: new FormControl(null, [Validators.required])
+   }, {
+     validators: [CompareValidation("password", "confirmPassword")]
+   });
   }
 
-  private parseValidationErrors(error: any): { [key: string]: string[] } {
-    const validationErrors: { [key: string]: string[] } = {};
-    if (error.status === 400 && error.error && error.error.errors) {
-      for (const key in error.error.errors) {
-        if (error.error.errors.hasOwnProperty(key)) {
-          validationErrors[key] = error.error.errors[key];
-        }
-      }
+  get register_personNameControl(): any {
+    return this.registerForm.controls["personName"];
+  }
+
+  get register_emailControl(): any {
+    return this.registerForm.controls["email"];
+  }
+
+  get register_passwordControl(): any {
+    return this.registerForm.controls["password"];
+  }
+
+  get register_confirmPasswordControl(): any {
+    return this.registerForm.controls["confirmPassword"];
+  }
+
+  registerSubmitted() {
+    this.isRegisterFormSubmitted = true;
+
+    if (this.registerForm.valid) {
+
+      this.accountService.postRegister(this.registerForm.value).subscribe({
+        next: (response: RegisterUser) => {
+          console.log(response);
+
+          this.isRegisterFormSubmitted = false;
+
+          this.router.navigate(['/']);
+
+          this.registerForm.reset();
+        },
+
+        error: (error) => {
+          console.log(error);
+        },
+
+        complete: () => { },
+      });
     }
-    return validationErrors;
   }
 }

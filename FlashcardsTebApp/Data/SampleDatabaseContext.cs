@@ -1,5 +1,4 @@
 ﻿using FlashcardsServer.Identity;
-using FlashcardsServer.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +11,4 @@ public class
         : base(options)
     {
     }
-
-    public DbSet<User> Users { get; set; }
 }

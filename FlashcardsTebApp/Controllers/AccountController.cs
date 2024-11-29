@@ -3,12 +3,14 @@ using FlashcardsServer.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using IApplicationLifetime = Microsoft.AspNetCore.Hosting.IApplicationLifetime;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace FlashcardsTebApp.Controllers;
 
 [AllowAnonymous]
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class AccountController : ControllerBase
 {
     private readonly UserManager<ApplicationUser> _userManager;
@@ -75,5 +77,51 @@ public class AccountController : ControllerBase
             return Ok(true);
         else
             return Ok(false);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ApplicationUser>> PostLogin(LoginDTO loginDTO
+    )
+    {
+        // Validation 
+        if (ModelState.IsValid == false)
+        {
+            string errorMessage = string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+
+            return BadRequest(errorMessage);
+        }
+
+        // Sign in
+        SignInResult result = await _signInManager.PasswordSignInAsync(
+            loginDTO.Email,
+            loginDTO.Password,
+            false, false);
+
+        if (result.Succeeded)
+        {
+            ApplicationUser? user =
+                await _userManager.FindByEmailAsync(loginDTO.Email);
+
+            if (user == null)
+                return NoContent();
+
+            return Ok(new
+            {
+                personName = user.PersonName,
+                email = user.Email
+            });
+        }
+
+        return BadRequest("Niepoprawne dane logowania");
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetLogout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return NoContent();
     }
 }

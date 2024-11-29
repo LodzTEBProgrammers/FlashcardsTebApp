@@ -1,17 +1,57 @@
-<form (ngSubmit)="register()">
-  <div>
-    <label for="username">Username:</label>
-    <input type="text" id="username" [(ngModel)]="user.username" name="username" required>
-    <div *ngIf="errorMessages['Username']" class="error">
-      <div *ngFor="let error of errorMessages['Username']">{{ error }}</div>
-    </div>
+<div class="w-75 margin-auto">
+  <div class="form-container">
+    <h2>Register</h2>
+    <form [formGroup]="registerForm" (ngSubmit)="registerSubmitted()">
+      <!-- personName -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="personName" class="form-label pt">Imię</label>
+        </div>
+        <div class="flex-1">
+          <input type="text" id="personName" class="form-input" formControlName="personName" />
+          <span class="text-red" *ngIf="(register_personNameControl.touched || isRegisterFormSubmitted) && (register_personNameControl.errors?.['required'])">Nazwa użytkownika nie może być pusta</span>
+        </div>
+      </div>
+      <!-- email -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="email" class="form-label pt">E-mail</label>
+        </div>
+        <div class="flex-1">
+          <input type="text" id="email" class="form-input" formControlName="email" />
+          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['required'])">E-mail nie może być pusty</span>
+          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['email'])">E-mail musi być w odpowiednim formacie.</span>
+          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['emailTaken'])">E-mail jest już zajęty.</span>
+        </div>
+      </div>
+      <!-- password -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="password" class="form-label pt">Hasło</label>
+        </div>
+        <div class="flex-1">
+          <input type="password" id="password" class="form-input" formControlName="password" />
+          <span class="text-red" *ngIf="(register_passwordControl.touched || isRegisterFormSubmitted) && (register_passwordControl.errors?.['required'])">Password can't be blank</span>
+        </div>
+      </div>
+      <!-- confirmPassword -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="confirmPassword" class="form-label pt">Potwierdź hasło</label>
+        </div>
+        <div class="flex-1">
+          <input type="password" id="confirmPassword" class="form-input" formControlName="confirmPassword" />
+          <span class="text-red" *ngIf="(register_confirmPasswordControl.touched || isRegisterFormSubmitted) && (register_confirmPasswordControl.errors?.['required'])">Confirm Password can't be blank</span>
+          <span class="text-red" *ngIf="(register_confirmPasswordControl.touched || isRegisterFormSubmitted) && (register_confirmPasswordControl.errors?.['compareValidator'])">Password and confirm password do not match</span>
+        </div>
+      </div>
+      <!-- submit -->
+      <div class="form-field flex">
+        <div class="w-25"></div>
+        <div class="flex-1">
+          <button type="submit" class="button button-green-back">Zarejestruj się</button>
+        </div>
+      </div>
+    </form>
   </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" [(ngModel)]="user.password" name="password" required>
-    <div *ngIf="errorMessages['Password']" class="error">
-      <div *ngFor="let error of errorMessages['Password']">{{ error }}</div>
-    </div>
-  </div>
-  <button type="submit">Register</button>
-</form>
+</div>

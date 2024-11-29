@@ -10,18 +10,5 @@ import {FormsModule} from "@angular/forms";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  user = { username: '', password: '' };
 
-  constructor(private accountService: AccountService) {}
-
-  login() {
-    this.accountService.login(this.user).subscribe(
-      response => {
-        console.log('Login successful', response);
-      },
-      error => {
-        console.error('Error logging in', error);
-      }
-    );
-  }
 }
