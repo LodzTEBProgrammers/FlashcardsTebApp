@@ -1,5 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using FlashcardsServer.DTO;
@@ -81,7 +82,23 @@ public class JwtService : IJwtService
             Token = token,
             Email = user.Email,
             PersonName = user.PersonName,
-            Expiration = expiration
+            Expiration = expiration,
+            RefreshToken = GenerateRefreshToken(),
+            RefreshTokenExpirationDateTime =
+                DateTime.Now.AddMinutes(Convert.ToInt32(
+                    _configuration["RefreshToken:EXPIRATION_MINUTES"]))
         };
+    }
+
+    // Creates a refresh token (base 64 string of random numbers)
+    private string GenerateRefreshToken()
+    {
+        byte[] bytes = new byte[64];
+        RandomNumberGenerator randomNumberGenerator =
+            RandomNumberGenerator.Create();
+
+        randomNumberGenerator.GetBytes(bytes);
+
+        return Convert.ToBase64String(bytes);
     }
 }
