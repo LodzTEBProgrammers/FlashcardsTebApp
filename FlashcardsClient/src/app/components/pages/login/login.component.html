@@ -5,7 +5,6 @@
 
     <form [formGroup]="loginForm" (ngSubmit)="loginSubmitted()">
 
-
       <!-- email -->
       <div class="form-field flex">
         <div class="w-25">
@@ -18,8 +17,6 @@
         </div>
       </div>
 
-
-
       <!-- password -->
       <div class="form-field flex">
         <div class="w-25">
@@ -31,8 +28,6 @@
           <span class="text-red" *ngIf="(login_passwordControl.touched || isLoginFormSubmitted) && (login_passwordControl.errors?.['required'])">Hasło nie może być puste.</span>
         </div>
       </div>
-
-
 
       <!-- submit -->
       <div class="form-field flex">

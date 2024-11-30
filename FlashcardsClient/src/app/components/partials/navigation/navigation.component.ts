@@ -14,21 +14,15 @@ import {CommonModule} from "@angular/common";
 export class NavigationComponent {
   constructor(public accountService: AccountService, private router: Router) { }
 
-  onLogOutClicked() {
+  onLogoutClicked() {
     this.accountService.getLogout().subscribe({
       next: (response: string) => {
-        this.accountService.currentUserName = null;
-
-        localStorage.removeItem("token");
-
-        this.router.navigate([ '/login' ]);
+        this.accountService.currentEmail = null;
+        this.router.navigate(['/login']);
       },
-
       error: (error) => {
         console.log(error);
-      },
-
-      complete: () => { },
+      }
     });
   }
 }

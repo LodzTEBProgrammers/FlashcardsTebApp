@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import { AccountService } from '../../../services/account.service';
-import {FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators} from '@angular/forms';
+import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import {Router} from "@angular/router";
-import {RegisterUser} from "../../../models/register-user";
-import {CompareValidation} from "../../../validators/comparing-passwords-validator";
+import { Router } from "@angular/router";
+import { CompareValidation } from "../../../validators/comparing-passwords-validator";
 
 @Component({
   selector: 'app-register',
@@ -17,15 +16,18 @@ export class RegisterComponent {
   registerForm: FormGroup;
   isRegisterFormSubmitted: boolean = false;
 
-  constructor(private accountService: AccountService, private router: Router) {
-   this.registerForm = new FormGroup({
-     personName: new FormControl(null, [Validators.required]),
+  private accountService = inject(AccountService);
+  private router = inject(Router);
+
+  constructor() {
+    this.registerForm = new FormGroup({
+      personName: new FormControl(null, [Validators.required]),
       email: new FormControl(null, [Validators.required, Validators.email]),
       password: new FormControl(null, [Validators.required]),
       confirmPassword: new FormControl(null, [Validators.required])
-   }, {
-     validators: [CompareValidation("password", "confirmPassword")]
-   });
+    }, {
+      validators: [CompareValidation("password", "confirmPassword")]
+    });
   }
 
   get register_personNameControl(): any {
@@ -54,20 +56,18 @@ export class RegisterComponent {
           console.log(response);
 
           this.isRegisterFormSubmitted = false;
-          localStorage["token"] = response.token;
-          localStorage["refreshToken"] = response.refreshToken;
 
-          this.router.navigate(['/']);
+          this.router.navigate(['/resources']);
+          localStorage["token"] = response.token;
 
           this.registerForm.reset();
         },
-
         error: (error) => {
-          console.log(error);
+          console.error(error);
         },
-
-        complete: () => { },
-      });
+        complete: () => {
+        }
+      })
     }
   }
 }

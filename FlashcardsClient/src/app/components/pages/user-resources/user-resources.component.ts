@@ -1,9 +1,11 @@
-import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, inject, OnInit, ViewChild} from '@angular/core';
 import {FlashcardService} from "../../../services/flashcard.service";
 import {CommonModule, DatePipe} from "@angular/common";
 import {FlashcardSet} from "../../../interfaces/FlashcardSet";
 import {Router, RouterLink, RouterModule} from '@angular/router';
-import {FormsModule} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
+import {AccountUser} from "../../../models/account-user";
+import {AccountService} from "../../../services/account.service";
 
 @Component({
   selector: 'app-user-resources',
@@ -12,7 +14,8 @@ import {FormsModule} from "@angular/forms";
     DatePipe,
     CommonModule,
     FormsModule,
-    RouterLink
+    RouterLink,
+    ReactiveFormsModule
   ],
   templateUrl: './user-resources.component.html',
   styleUrl: './user-resources.component.css'
@@ -26,14 +29,38 @@ export class UserResourcesComponent implements OnInit, AfterViewInit {
   leftBorderWidth: number = 0;
   rightBorderWidth: number = 0;
 
+  users: AccountUser[] = [];
+
+  private accountService = inject(AccountService);
+
   @ViewChild('leftLink') leftLink!: ElementRef;
   @ViewChild('rightLink') rightLink!: ElementRef;
   constructor(private flashcardService: FlashcardService, private router: Router) {}
 
   ngOnInit() {
+    this.loadUsers();
     this.flashcardService.getFlashcardSets().subscribe(sets => {
       this.flashcardSets = sets;
     });
+  }
+
+  loadUsers(){
+    this.accountService.getUsers().subscribe((response: AccountUser[]) => {
+      this.users = response;
+    });
+  }
+
+  // When refresh button is clicked, execute
+  refreshClicked() {
+    this.accountService.postGenerateNewToken().subscribe({
+      next: (response: any) => {
+        localStorage["token"] = response.token;
+        localStorage["refreshToken"] = response.refreshToken;
+
+        this.loadUsers();
+      },
+      error: (err: any) => (console.log(err))
+    })
   }
 
   ngAfterViewInit() {
@@ -57,13 +84,5 @@ export class UserResourcesComponent implements OnInit, AfterViewInit {
   onOptionChange(event: Event) {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedOption = selectElement.value;
-  }
-
-  onSearch() {
-    // Implement search logic here
-  }
-
-  openSet(setId: string) {
-    this.router.navigate(['/set', setId]);
   }
 }

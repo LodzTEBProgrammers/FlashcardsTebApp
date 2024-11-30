@@ -14,6 +14,7 @@ using Microsoft.Azure.KeyVault;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration.AzureKeyVault;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 
 try
@@ -33,6 +34,9 @@ try
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen();
+
+    // Enable PII logging
+    IdentityModelEventSource.ShowPII = true;
 
 
     builder.Services.AddTransient<IJwtService, JwtService>();
@@ -104,8 +108,9 @@ try
         options.DefaultAuthenticateScheme =
             JwtBearerDefaults.AuthenticationScheme;
 
-        options.DefaultChallengeScheme =
-            CookieAuthenticationDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
     }).AddJwtBearer(options =>
     {
         // Retrieve the symmetric key from Azure Key Vault

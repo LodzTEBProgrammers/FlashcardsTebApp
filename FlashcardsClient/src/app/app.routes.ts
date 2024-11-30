@@ -8,12 +8,11 @@ import {RegisterComponent} from "./components/pages/register/register.component"
 import {LoginComponent} from "./components/pages/login/login.component";
 
 export const routes: Routes = [
+  { path: '', component: HomePageComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
-  { path: '', component: HomePageComponent },
   { path: 'create', component: FlashcardCreateComponent },
   { path: 'folder/:name', component: FolderComponent },
   { path: 'set/:id', component: FlashcardSetComponent },
   { path: 'resources', component: UserResourcesComponent },
-
 ];
