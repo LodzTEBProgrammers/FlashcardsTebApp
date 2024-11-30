@@ -1,12 +1,45 @@
-<h2>Login</h2>
-<form (ngSubmit)="login()">
-  <div>
-    <label for="username">Username:</label>
-    <input type="text" id="username" [(ngModel)]="user.username" name="username" required>
+<div class="w-75 margin-auto">
+  <div class="form-container">
+
+    <h2>Logowanie</h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="loginSubmitted()">
+
+      <!-- email -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="email" class="form-label pt">E-mail</label>
+        </div>
+
+        <div class="flex-1">
+          <input type="text" id="email" class="form-input" formControlName="email" />
+          <span class="text-red" *ngIf="(login_emailControl.touched || isLoginFormSubmitted) && (login_emailControl.errors?.['required'])">E-mail nie może być pusty.</span>
+        </div>
+      </div>
+
+      <!-- password -->
+      <div class="form-field flex">
+        <div class="w-25">
+          <label for="password" class="form-label pt">Hasło</label>
+        </div>
+
+        <div class="flex-1">
+          <input type="password" id="password" class="form-input" formControlName="password" />
+          <span class="text-red" *ngIf="(login_passwordControl.touched || isLoginFormSubmitted) && (login_passwordControl.errors?.['required'])">Hasło nie może być puste.</span>
+        </div>
+      </div>
+
+      <!-- submit -->
+      <div class="form-field flex">
+        <div class="w-25">
+        </div>
+
+        <div class="flex-1">
+          <button type="submit" class="button button-green-back">Zaloguj się</button>
+        </div>
+      </div>
+
+    </form>
+
   </div>
-  <div>
-    <label for="password">Password:</label>
-    <input type="password" id="password" [(ngModel)]="user.password" name="password" required>
-  </div>
-  <button type="submit">Login</button>
-</form>
+</div>

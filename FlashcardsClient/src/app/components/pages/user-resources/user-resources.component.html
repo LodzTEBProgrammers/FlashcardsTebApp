@@ -17,10 +17,33 @@
       <option value="studied">Uczyłem się</option>
     </select>
     <div class="search-bar">
-      <input type="text" placeholder="Wyszukuj fiszki" [(ngModel)]="searchQuery" (input)="onSearch()" />
+      <input type="text" placeholder="Wyszukuj fiszki" [(ngModel)]="searchQuery"/>
       <i class="bi bi-search"></i>
     </div>
   </div>
+
+  <!-- Wyswietl liste uzytkownikow -->
+  <table class="table w-100" *ngIf="users.length > 0">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th>Imię użytkownika</th>
+      <th></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let user of users; let i = index">
+      <td>{{i + 1}}</td>
+      <td>
+        <p>{{user.personName}}</p>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <button type="button" class="btn btn-warning" (click)="refreshClicked()">
+    Refresh
+  </button>
 
   <div *ngIf="selectedOption === 'created'">
     <!-- Wyświetl utworzone zestawy fiszek -->

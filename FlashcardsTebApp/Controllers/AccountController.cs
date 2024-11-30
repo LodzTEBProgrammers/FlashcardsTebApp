@@ -1,68 +1,219 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Security.Claims;
+using FlashcardsServer.DTO;
+using FlashcardsServer.Identity;
+using FlashcardsServer.ServiceContracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using FlashcardsServer.Models;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace FlashcardsTebApp.Controllers;
 
+[AllowAnonymous]
 [ApiController]
-[Route("[controller]")]
+[Route("[controller]/[action]")]
 public class AccountController : ControllerBase
 {
-    private readonly SampleDatabaseContext _context;
-    private readonly PasswordHasher<User> _passwordHasher = new();
-    private readonly ILogger<AccountController> _logger;
+    private readonly UserManager<ApplicationUser> _userManager;
+    private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<ApplicationRole> _roleManager;
+    private readonly IJwtService _jwtService;
 
-    public AccountController(SampleDatabaseContext context,
-                             ILogger<AccountController> logger
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="userManager"></param>
+    /// <param name="signInManager"></param>
+    /// <param name="roleManager"></param>
+    public AccountController(UserManager<ApplicationUser> userManager,
+                             SignInManager<ApplicationUser> signInManager,
+                             RoleManager<ApplicationRole> roleManager,
+                             IJwtService jwtService
     )
     {
-        _context = context;
-        _logger = logger;
+        _userManager = userManager;
+        _signInManager = signInManager;
+        _roleManager = roleManager;
+        _jwtService = jwtService;
     }
 
-    [HttpPost("register")]
-    public IActionResult Register([FromBody] User user)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="registerDto"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<ActionResult<ApplicationUser>> PostRegister(
+        RegisterDTO registerDto
+    )
     {
-        _logger.LogInformation("Register attempt for username: {Username}",
-            user.Username);
-
-        if (_context.Users.Any(u => u.Username == user.Username))
+        // Validation
+        if (ModelState.IsValid == false)
         {
-            _logger.LogWarning("Username already exists: {Username}",
-                user.Username);
-            return BadRequest(new { message = "Username already exists." });
+            string errorMessage = string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+
+            return Problem(errorMessage);
         }
 
-        user.Password = _passwordHasher.HashPassword(user, user.Password);
-        _context.Users.Add(user);
-        _context.SaveChanges();
-        _logger.LogInformation("User registered successfully: {Username}",
-            user.Username);
-        return Ok(new { message = "User registered successfully." });
+        // Create User
+        ApplicationUser user = new()
+        {
+            Email = registerDto.Email,
+            UserName = registerDto.Email,
+            PersonName = registerDto.PersonName
+        };
+
+        IdentityResult result =
+            await _userManager.CreateAsync(user, registerDto.Password);
+
+        if (result.Succeeded)
+        {
+            // Sign-in 
+            await _signInManager.SignInAsync(user, false);
+
+            AuthenticationResponse authenticationResponse =
+                _jwtService.CreateJwtToken(user);
+
+            user.RefreshToken = authenticationResponse.RefreshToken;
+            user.RefreshTokenExpirationDateTime = authenticationResponse
+                .RefreshTokenExpirationDateTime;
+            await _userManager.UpdateAsync(user);
+
+            return Ok(authenticationResponse);
+        } else
+        {
+            string errorMessage = string.Join(" | ",
+                result.Errors.Select(e => e.Description));
+            return Problem(errorMessage);
+        }
     }
 
-    [HttpPost("login")]
-    public IActionResult Login([FromBody] User login)
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="email"></param>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<IActionResult> IsEmailAlreadyRegistered(string email)
     {
-        _logger.LogInformation("Login attempt for username: {Username}",
-            login.Username);
+        ApplicationUser? user = await _userManager.FindByEmailAsync(email);
 
-        User? user =
-            _context.Users.SingleOrDefault(u => u.Username == login.Username);
-        if (user == null ||
-            _passwordHasher.VerifyHashedPassword(user, user.Password,
-                login.Password) == PasswordVerificationResult.Failed)
+        if (user == null) return Ok(true);
+
+        return Ok($"Email {email} is already in use");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="loginDto"></param>
+    /// <returns></returns>
+    [HttpPost]
+    public async Task<ActionResult<ApplicationUser>> PostLogin(LoginDTO loginDto
+    )
+    {
+        // Validation
+        if (ModelState.IsValid == false)
         {
-            _logger.LogWarning("Invalid login attempt for username: {Username}",
-                login.Username);
-            return Unauthorized(new
-                { message = "Invalid username or password." });
+            string errorMessage = string.Join(" | ", ModelState.Values
+                .SelectMany(v => v.Errors)
+                .Select(e => e.ErrorMessage));
+
+            return Problem(errorMessage);
         }
 
-        _logger.LogInformation("Login successful for username: {Username}",
-            login.Username);
-        return Ok(new { message = "Login successful." });
+        SignInResult result = await _signInManager.PasswordSignInAsync(
+            loginDto.Email,
+            loginDto.Password, false, false);
+
+        if (result.Succeeded)
+        {
+            ApplicationUser? user =
+                await _userManager.FindByEmailAsync(loginDto.Email);
+
+            if (user == null) return NotFound();
+
+            // Sign-in 
+            await _signInManager.SignInAsync(user, false);
+
+            AuthenticationResponse authenticationResponse =
+                _jwtService.CreateJwtToken(user);
+
+            // Ensure refresh token is created and saved
+            user.RefreshToken = authenticationResponse.RefreshToken;
+            user.RefreshTokenExpirationDateTime = authenticationResponse
+                .RefreshTokenExpirationDateTime;
+            IdentityResult updateResult = await _userManager.UpdateAsync(user);
+
+            if (!updateResult.Succeeded)
+            {
+                string errorMessage = string.Join(" | ",
+                    updateResult.Errors.Select(e => e.Description));
+                return Problem(errorMessage);
+            }
+
+            return Ok(authenticationResponse);
+        }
+
+        return Problem("Invalid email or password.");
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    public async Task<ActionResult<ApplicationUser>> GetLogout()
+    {
+        await _signInManager.SignOutAsync();
+
+        return NoContent();
+    }
+
+    [HttpPost("generate-new-jwt-token")]
+    public async Task<IActionResult> GenerateNewAccessToken(
+        TokenModel tokenModel
+    )
+    {
+        if (tokenModel == null) return BadRequest("Invalid client request");
+
+        ClaimsPrincipal? principal =
+            _jwtService.GetPrincipalFromJwtToken(tokenModel.Token);
+        if (principal == null) return BadRequest("Invalid jwt access token");
+
+        string? email = principal.FindFirstValue(ClaimTypes.Email);
+
+        ApplicationUser? user = await _userManager.FindByEmailAsync(email);
+
+        if (user == null || user.RefreshToken != tokenModel.RefreshToken ||
+            user.RefreshTokenExpirationDateTime <= DateTime.Now)
+            return BadRequest("Invalid refresh token");
+
+        AuthenticationResponse authenticationResponse =
+            _jwtService.CreateJwtToken(user);
+
+        user.RefreshToken = authenticationResponse.RefreshToken;
+        user.RefreshTokenExpirationDateTime =
+            authenticationResponse.RefreshTokenExpirationDateTime;
+
+        await _userManager.UpdateAsync(user);
+
+        return Ok(authenticationResponse);
+    }
+
+    // LIST OF USERS
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<ApplicationUser>>> GetUsers()
+    {
+        // If Users are not found
+        if (_userManager.Users.Count() == 0) return NotFound();
+
+
+        List<ApplicationUser> users = await _userManager.Users.ToListAsync();
+
+        return Ok(users);
     }
 }

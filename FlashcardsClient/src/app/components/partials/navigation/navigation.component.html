@@ -1,17 +1,36 @@
 <nav class="navbar navbar-dark">
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center w-100">
     <button class="navbar-toggler ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a class="navbar-brand ms-3" href="#">
+    <a class="navbar-brand ms-3 d-none d-md-block" href="#">
       <img width="100" src="teb_logo.svg" alt="Logo"/>
       Flashcards TEB App
     </a>
 
     <app-header></app-header>
+
+    <ul class="nav ms-auto">
+      <ng-container *ngIf="accountService.currentEmail; else loggedOut">
+        <i class="bi bi-person-circle fs-3 text-white"></i>
+        <li class="nav-item">
+          <span class="nav-link text-white">{{ accountService.currentEmail }}</span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#" onclick="return false" (click)="onLogoutClicked()">Wyloguj</a>
+        </li>
+      </ng-container>
+      <ng-template #loggedOut>
+        <li class="nav-item">
+          <a class="nav-link text-white" [routerLink]="['/login']" routerLinkActive="active-link">Logowanie</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" [routerLink]="['/register']" routerLinkActive="active-link">Rejestracja</a>
+        </li>
+      </ng-template>
+    </ul>
   </div>
 </nav>
-
 <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="sidebarLabel">

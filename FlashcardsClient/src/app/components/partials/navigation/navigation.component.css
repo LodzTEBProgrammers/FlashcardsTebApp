@@ -2,3 +2,14 @@
 .offcanvas {
   background-color: #0a082d;
 }
+
+.active-link {
+  border-bottom: 2px solid #4355ff;
+  transition: border-bottom 0.3s ease;
+}
+
+@media (max-width: 767.98px) {
+  .navbar-brand {
+    display: none;
+  }
+}
