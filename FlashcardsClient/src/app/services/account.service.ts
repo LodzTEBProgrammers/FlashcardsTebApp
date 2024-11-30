@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import { Observable } from "rxjs";
+import {map, Observable, tap} from "rxjs";
 import { environment } from "../../environments/environment";
 import {RegisterUser} from "../models/register-user";
 import {LoginUser} from "../models/login-user";
 import {AccountUser} from "../models/account-user";
+import {AuthResponse} from "../interfaces/AuthResponse";
 
 @Injectable({
   providedIn: 'root'
@@ -23,8 +24,25 @@ export class AccountService {
     return this.http.post<RegisterUser>(`${this.apiUrl}/PostRegister`, registerUser);
   }
 
-  public postLogin(loginUser: LoginUser) : Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/PostLogin`, loginUser);
+  public postLogin(loginUser: LoginUser): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/PostLogin`, loginUser).pipe(
+      map(response => {
+        // Derive isSuccess based on the presence of the token
+        response.isSuccess = !!response.token;
+
+        if (response.isSuccess) {
+          localStorage.setItem('token', response.token!); // Use non-null assertion
+          if (response.refreshToken) {
+            localStorage.setItem('refreshToken', response.refreshToken);
+          }
+          response.message = "Login Success";
+        } else {
+          response.message = "Login Failed";
+        }
+        console.log(`isSuccess: ${response.isSuccess}, message: ${response.message}, token: ${response.token}`);
+        return response;
+      })
+    );
   }
 
   public getLogout() : Observable<string> {
