@@ -1,45 +1,42 @@
-<div class="w-75 margin-auto">
-  <div class="form-container">
+<div class="h-screen flex items-center justify-center">
+  <form class="shadow-lg rounded-lg p-6 bg-white w-full max-w-md" [formGroup]="loginForm" (ngSubmit)="loginSubmitted()">
+    <div class="py-4 text-center">
+      <h1 class="font-bold text-2xl text-purple-700">
+        Logowanie
+      </h1>
+      <h6 class="text-slate-600 text-base">
+        Zaloguj się do swojego konta
+      </h6>
+    </div>
 
-    <h2>Logowanie</h2>
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email" placeholder="E-mail"/>
+      <mat-icon matPrefix>email</mat-icon>
+    </mat-form-field>
 
-    <form [formGroup]="loginForm" (ngSubmit)="loginSubmitted()">
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>Hasło</mat-label>
+      <input matInput formControlName="password" placeholder="Hasło" type="{{hide ? 'password' : 'text'}}" />
+      <mat-icon matPrefix>lock</mat-icon>
+      <mat-icon (click)="hide = !hide" matSuffix>
+        {{ hide ? 'visibility_off': 'visibility' }}
+      </mat-icon>
+    </mat-form-field>
 
-      <!-- email -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="email" class="form-label pt">E-mail</label>
-        </div>
+    <button type="submit"
+            [disabled]="!loginForm.valid"
+            class="bg-purple-700 hover:bg-purple-500 disabled:bg-purple-400 border border-slate-200 font-bold py-2 px-4 rounded-md w-full text-white">
+      Zaloguj się
+    </button>
 
-        <div class="flex-1">
-          <input type="text" id="email" class="form-input" formControlName="email" />
-          <span class="text-red" *ngIf="(login_emailControl.touched || isLoginFormSubmitted) && (login_emailControl.errors?.['required'])">E-mail nie może być pusty.</span>
-        </div>
-      </div>
-
-      <!-- password -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="password" class="form-label pt">Hasło</label>
-        </div>
-
-        <div class="flex-1">
-          <input type="password" id="password" class="form-input" formControlName="password" />
-          <span class="text-red" *ngIf="(login_passwordControl.touched || isLoginFormSubmitted) && (login_passwordControl.errors?.['required'])">Hasło nie może być puste.</span>
-        </div>
-      </div>
-
-      <!-- submit -->
-      <div class="form-field flex">
-        <div class="w-25">
-        </div>
-
-        <div class="flex-1">
-          <button type="submit" class="button button-green-back">Zaloguj się</button>
-        </div>
-      </div>
-
-    </form>
-
-  </div>
+    <div class="my-4 text-center">
+      <span class="text-slate-600 hover:text-slate-700">
+        Nie masz konta?
+      </span>
+      <a routerLink="/register" class="text-purple-700 hover:text-purple-500">
+        Zarejestruj się
+      </a>
+    </div>
+  </form>
 </div>
