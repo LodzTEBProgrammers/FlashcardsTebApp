@@ -2,13 +2,16 @@ import {Component, inject} from '@angular/core';
 import { AccountService } from '../../../services/account.service';
 import {FormControl, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Router } from "@angular/router";
+import {Router, RouterLink} from "@angular/router";
 import { CompareValidation } from "../../../validators/comparing-passwords-validator";
+import {MatInputModule} from "@angular/material/input";
+import {MatIconModule} from "@angular/material/icon";
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatInputModule, MatIconModule, RouterLink, MatSnackBarModule],
   templateUrl: './register.component.html',
   styleUrls: ['./register.component.css']
 })
@@ -18,6 +21,9 @@ export class RegisterComponent {
 
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private matSnackBar = inject(MatSnackBar);
+  hidePassword = true;
+  hideConfirmPassword = true;
 
   constructor() {
     this.registerForm = new FormGroup({
@@ -30,37 +36,20 @@ export class RegisterComponent {
     });
   }
 
-  get register_personNameControl(): any {
-    return this.registerForm.controls["personName"];
-  }
-
-  get register_emailControl(): any {
-    return this.registerForm.controls["email"];
-  }
-
-  get register_passwordControl(): any {
-    return this.registerForm.controls["password"];
-  }
-
-  get register_confirmPasswordControl(): any {
-    return this.registerForm.controls["confirmPassword"];
-  }
-
   registerSubmitted() {
     this.isRegisterFormSubmitted = true;
 
     if (this.registerForm.valid) {
-
       this.accountService.postRegister(this.registerForm.value).subscribe({
         next: (response: any) => {
           console.log(response);
 
           this.isRegisterFormSubmitted = false;
-
-          this.router.navigate(['/resources']);
           localStorage["token"] = response.token;
 
+          this.router.navigate(['/']);
           this.registerForm.reset();
+          this.matSnackBar.open('Pomyślnie zarejestrowano! :)', 'Zamknij', { duration: 5000 });
         },
         error: (error) => {
           console.error(error);

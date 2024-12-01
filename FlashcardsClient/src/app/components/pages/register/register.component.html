@@ -1,57 +1,57 @@
-<div class="w-75 margin-auto">
-  <div class="form-container">
-    <h2>Rejestracja</h2>
-    <form [formGroup]="registerForm" (ngSubmit)="registerSubmitted()">
-      <!-- personName -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="personName" class="form-label pt">Imię</label>
-        </div>
-        <div class="flex-1">
-          <input type="text" id="personName" class="form-input" formControlName="personName" />
-          <span class="text-red" *ngIf="(register_personNameControl.touched || isRegisterFormSubmitted) && (register_personNameControl.errors?.['required'])">Nazwa użytkownika nie może być pusta</span>
-        </div>
-      </div>
-      <!-- email -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="email" class="form-label pt">E-mail</label>
-        </div>
-        <div class="flex-1">
-          <input type="text" id="email" class="form-input" formControlName="email" />
-          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['required'])">E-mail nie może być pusty</span>
-          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['email'])">E-mail musi być w odpowiednim formacie.</span>
-          <span class="text-red" *ngIf="(register_emailControl.touched || isRegisterFormSubmitted) && (register_emailControl.errors?.['emailTaken'])">E-mail jest już zajęty.</span>
-        </div>
-      </div>
-      <!-- password -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="password" class="form-label pt">Hasło</label>
-        </div>
-        <div class="flex-1">
-          <input type="password" id="password" class="form-input" formControlName="password" />
-          <span class="text-red" *ngIf="(register_passwordControl.touched || isRegisterFormSubmitted) && (register_passwordControl.errors?.['required'])">Hasło nie może być puste.</span>
-        </div>
-      </div>
-      <!-- confirmPassword -->
-      <div class="form-field flex">
-        <div class="w-25">
-          <label for="confirmPassword" class="form-label pt">Potwierdź hasło</label>
-        </div>
-        <div class="flex-1">
-          <input type="password" id="confirmPassword" class="form-input" formControlName="confirmPassword" />
-          <span class="text-red" *ngIf="(register_confirmPasswordControl.touched || isRegisterFormSubmitted) && (register_confirmPasswordControl.errors?.['required'])">Hasło potwierdzające nie może być puste.</span>
-          <span class="text-red" *ngIf="(register_confirmPasswordControl.touched || isRegisterFormSubmitted) && (register_confirmPasswordControl.errors?.['compareValidator'])">Hasła nie są takie same.</span>
-        </div>
-      </div>
-      <!-- submit -->
-      <div class="form-field flex">
-        <div class="w-25"></div>
-        <div class="flex-1">
-          <button type="submit" class="button button-green-back">Zarejestruj się</button>
-        </div>
-      </div>
-    </form>
-  </div>
+<div class="h-screen flex items-center justify-center">
+  <form class="shadow-lg rounded-lg p-6 bg-white w-full max-w-md" [formGroup]="registerForm" (ngSubmit)="registerSubmitted()">
+    <div class="py-4 text-center">
+      <h1 class="font-bold text-2xl text-purple-700">
+        Rejestracja
+      </h1>
+      <h6 class="text-slate-600 text-base">
+        Utwórz nowe konto
+      </h6>
+    </div>
+
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>Imię</mat-label>
+      <input matInput formControlName="personName" placeholder="Imię"/>
+      <mat-icon matPrefix>person</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>E-mail</mat-label>
+      <input matInput formControlName="email" placeholder="E-mail"/>
+      <mat-icon matPrefix>email</mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>Hasło</mat-label>
+      <input matInput formControlName="password" placeholder="Hasło" type="{{hidePassword ? 'password' : 'text'}}"/>
+      <mat-icon matPrefix>lock</mat-icon>
+      <mat-icon (click)="hidePassword = !hidePassword" matSuffix>
+        {{ hidePassword ? 'visibility_off' : 'visibility' }}
+      </mat-icon>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full mb-4">
+      <mat-label>Potwierdź hasło</mat-label>
+      <input matInput formControlName="confirmPassword" placeholder="Potwierdź hasło" type="{{hideConfirmPassword ? 'password' : 'text'}}"/>
+      <mat-icon matPrefix>lock</mat-icon>
+      <mat-icon (click)="hideConfirmPassword = !hideConfirmPassword" matSuffix>
+        {{ hideConfirmPassword ? 'visibility_off' : 'visibility' }}
+      </mat-icon>
+    </mat-form-field>
+
+    <button type="submit"
+            [disabled]="!registerForm.valid"
+            class="bg-purple-700 hover:bg-purple-500 disabled:bg-purple-400 border border-slate-200 font-bold py-2 px-4 rounded-md w-full text-white">
+      Zarejestruj się
+    </button>
+
+    <div class="my-4 text-center">
+      <span class="text-slate-600 hover:text-slate-700">
+        Masz już konto?
+      </span>
+      <a routerLink="/login" class="text-purple-700 hover:text-purple-500">
+        Zaloguj się
+      </a>
+    </div>
+  </form>
 </div>

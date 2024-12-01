@@ -1,6 +1,6 @@
 <div *ngIf="flashcardSet">
-  <h1>{{ flashcardSet?.title }}</h1>
-  <p>{{ flashcardSet?.description }}</p>
+  <h1>{{ flashcardSet.title }}</h1>
+  <p>{{ flashcardSet.description }}</p>
   <div *ngIf="!showSummary">
     <div class="flashcard" (click)="flipCard()">
       <div class="flashcard-inner" [class.flipped]="flipped[currentIndex]">

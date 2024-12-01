@@ -1,0 +1,12 @@
+/* Default text size */
+.span-my {
+  font-size: 1.25rem; /* 20px */
+}
+
+/* Smaller text size for screens smaller than 640px */
+@media (max-width: 640px) {
+  .h1-my {
+    font-size: 1rem; /* 16px */
+  }
+
+}

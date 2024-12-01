@@ -6,12 +6,25 @@
     </h1>
 
     <div class="flex flex-col items-center gap-3 justify-center">
+      @if(accountService.getUserDetail()) {
+        <h1 class="text-2xl h1-my">Jesteś zalogowany jako:
+          <span class="font-bold bg-purple-600 rounded-md p-2 text-white">
+            {{ accountService.getUserDetail()?.fullName }}
+          </span>
+        </h1>
+        <a routerLink="/resources">
+          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
+            Przejdź do fiszek
+          </button>
+        </a>
+      } @else {
       <p class="text-2xl">Nie jesteś zalogowany</p>
       <a routerLink="/login">
         <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md">
           Zaloguj się
         </button>
       </a>
+      }
     </div>
   </div>
 </div>

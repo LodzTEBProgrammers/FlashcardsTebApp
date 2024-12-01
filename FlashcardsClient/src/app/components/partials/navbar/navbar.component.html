@@ -14,11 +14,11 @@
         <div class="flex gap-5 align-items-center" style="padding: 10px 50px">
           <a [matMenuTriggerFor]="menu" class="cursor-pointer flex items-center letter" >
             <div class="bg-red-400 text-white font-bold shadow-md rounded-full w-10 h-10  flex items-center justify-center text-2xl">
-              <span>{{ accountService.currentPersonName?.[0] || '' }}</span>
+              {{ userDetail.fullName[0].toUpperCase() }}
             </div>
             <div class="text-white flex flex-col ml-1">
               <h1 class="p-0 m-0 font-medium text-xl name">
-                {{ accountService.currentPersonName }}
+                {{ userDetail.fullName }}
               </h1>
             </div>
           </a>
