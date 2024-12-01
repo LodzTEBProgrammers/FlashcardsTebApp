@@ -1,0 +1,9 @@
+.custom-toolbar {
+  background-color: #0a082d;
+}
+
+
+a[routerLink] {
+  color: white;
+  text-decoration: none;
+}
