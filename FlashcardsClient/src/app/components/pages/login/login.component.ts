@@ -3,20 +3,27 @@ import { AccountService } from "../../../services/account.service";
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from "@angular/forms";
 import { Router } from "@angular/router";
 import { CommonModule } from "@angular/common";
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import {MatInputModule} from "@angular/material/input";
+import {MatFormFieldControl} from "@angular/material/form-field";
+import {MatIconModule} from "@angular/material/icon";
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule, MatInputModule, MatIconModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent {
   loginForm: FormGroup;
   isLoginFormSubmitted: boolean = false;
+  hide = true;
 
   private accountService = inject(AccountService);
   private router = inject(Router);
+  private matSnackBar = inject(MatSnackBar);
+
   constructor() {
     this.loginForm = new FormGroup({
       email: new FormControl(null, [Validators.required, Validators.email]),
@@ -36,7 +43,6 @@ export class LoginComponent {
     this.isLoginFormSubmitted = true;
 
     if (this.loginForm.valid) {
-
       this.accountService.postLogin(this.loginForm.value).subscribe({
         next: (response: any) => {
           console.log(response);
@@ -49,9 +55,11 @@ export class LoginComponent {
           this.router.navigate(['/resources']);
 
           this.loginForm.reset();
+          this.matSnackBar.open('Pomyślnie zalogowano! :)', 'Zamknij', { duration: 5000 });
         },
         error: (error) => {
           console.error(error);
+          this.matSnackBar.open('Logowanie nieudane :(', 'Zamknij', { duration: 5000 });
         },
         complete: () => {
         }

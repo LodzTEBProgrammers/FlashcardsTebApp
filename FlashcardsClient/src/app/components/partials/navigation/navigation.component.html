@@ -1,4 +1,4 @@
-<nav class="navbar navbar-dark">
+<nav class="navbar navbar-dark p-3">
   <div class="d-flex align-items-center w-100">
     <button class="navbar-toggler ms-2" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar">
       <span class="navbar-toggler-icon"></span>
@@ -11,26 +11,41 @@
     <app-header></app-header>
 
     <ul class="nav ms-auto">
-      <ng-container *ngIf="accountService.currentEmail; else loggedOut">
-        <i class="bi bi-person-circle fs-3 text-white"></i>
-        <li class="nav-item">
-          <span class="nav-link text-white">{{ accountService.currentEmail }}</span>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="#" onclick="return false" (click)="onLogoutClicked()">Wyloguj</a>
-        </li>
-      </ng-container>
-      <ng-template #loggedOut>
-        <li class="nav-item">
-          <a class="nav-link text-white" [routerLink]="['/login']" routerLinkActive="active-link">Logowanie</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link text-white" [routerLink]="['/register']" routerLinkActive="active-link">Rejestracja</a>
-        </li>
-      </ng-template>
+      @if (isLoggedIn()) {
+        <div *ngIf="accountService.getUserDetail() as userDetail">
+          <div class="flex gap-5 align-items-center">
+            <a [matMenuTriggerFor]="menu" class=" cursor-pointer">
+              <div class="bg-red-400 text-white font-bold shadow-md rounded-full w-5 h-5 p-5 flex justify-center">
+                {{ userDetail?.fullName}}
+              </div>
+              <div class="text-white flex flex-col">
+                <h1 class="p-0 m-0 font-medium">
+                  {{ userDetail?.fullName }}
+                </h1>
+              </div>
+            </a>
+            <mat-menu #menu="matMenu">
+              <button [routerLink]="['account', 1]" mat-menu-item>
+                <mat-icon>account_circle</mat-icon>
+                <span>Zobacz Profil</span>
+              </button>
+              <button (click)="logout()" mat-menu-item>
+                <mat-icon>logout</mat-icon>
+                <span>Wyloguj</span>
+              </button>
+            </mat-menu>
+          </div>
+        </div>
+      } @else {
+        <div class="flex gap-5 items-center">
+          <a mat-button routerLink="/login" class="text-white">Logowanie</a>
+          <a mat-button routerLink="/register" class="text-white">Rejestracja</a>
+        </div>
+        }
     </ul>
   </div>
 </nav>
+
 <div class="offcanvas offcanvas-start text-white" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="sidebarLabel">
@@ -42,18 +57,18 @@
   <div class="offcanvas-body">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link text-white" href="#">
           <i class="bi bi-house-door"></i> Strona główna
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/resources">
+        <a class="nav-link text-white" href="/resources">
           <i class="bi bi-folder"></i> Twoje zasoby
         </a>
       </li>
       <hr class="border-white">
       <li class="nav-item">
-        <a class="nav-link" href="/create">
+        <a class="nav-link text-white" href="/create">
           <i class="bi bi-card-text"></i> Fiszki
         </a>
       </li>

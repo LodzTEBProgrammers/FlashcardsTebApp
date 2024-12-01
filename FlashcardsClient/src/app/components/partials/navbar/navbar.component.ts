@@ -1,21 +1,27 @@
 import {Component, inject} from '@angular/core';
-import {Router, RouterLink, RouterModule} from "@angular/router";
-import {HeaderComponent} from "../header/header.component";
-import {AccountService} from "../../../services/account.service";
-import {CommonModule} from "@angular/common";
 import {MatToolbarModule} from "@angular/material/toolbar";
 import {MatButtonModule} from "@angular/material/button";
 import {MatIconModule} from "@angular/material/icon";
+import {Router, RouterLink} from "@angular/router";
+import {AccountService} from "../../../services/account.service";
 import {MatMenuModule} from "@angular/material/menu";
+import {NgIf} from "@angular/common";
 
 @Component({
-  selector: 'app-navigation',
+  selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, HeaderComponent, RouterModule, CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
-  templateUrl: './navigation.component.html',
-  styleUrl: './navigation.component.css'
+  imports: [
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    RouterLink,
+    MatMenuModule,
+    NgIf
+  ],
+  templateUrl: './navbar.component.html',
+  styleUrl: './navbar.component.css'
 })
-export class NavigationComponent {
+export class NavbarComponent {
   accountService = inject(AccountService)
   router= inject(Router)
 
