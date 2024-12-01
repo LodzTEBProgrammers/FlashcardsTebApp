@@ -134,7 +134,12 @@ public class AccountController : ControllerBase
             ApplicationUser? user =
                 await _userManager.FindByEmailAsync(loginDto.Email);
 
-            if (user == null) return NotFound();
+            if (user == null)
+                return Unauthorized(new AuthenticationResponse
+                {
+                    isSuccess = false,
+                    Message = "Nie znaleziono takiego użytkownika"
+                });
 
             // Sign-in 
             await _signInManager.SignInAsync(user, false);
@@ -146,6 +151,10 @@ public class AccountController : ControllerBase
             user.RefreshToken = authenticationResponse.RefreshToken;
             user.RefreshTokenExpirationDateTime = authenticationResponse
                 .RefreshTokenExpirationDateTime;
+
+            authenticationResponse.isSuccess = true;
+            authenticationResponse.Message = "Logowanie udane :)";
+
             IdentityResult updateResult = await _userManager.UpdateAsync(user);
 
             if (!updateResult.Succeeded)
@@ -158,7 +167,11 @@ public class AccountController : ControllerBase
             return Ok(authenticationResponse);
         }
 
-        return Problem("Invalid email or password.");
+        return Unauthorized(new AuthenticationResponse
+        {
+            isSuccess = false,
+            Message = "Niepoprawny E-mail lub hasło"
+        });
     }
 
     /// <summary>
