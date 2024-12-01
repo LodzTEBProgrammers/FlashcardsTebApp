@@ -1,28 +1,30 @@
-import { Component } from '@angular/core';
+import {Component, inject} from '@angular/core';
 import {Router, RouterLink, RouterModule} from "@angular/router";
 import {HeaderComponent} from "../header/header.component";
 import {AccountService} from "../../../services/account.service";
 import {CommonModule} from "@angular/common";
+import {MatToolbarModule} from "@angular/material/toolbar";
+import {MatButtonModule} from "@angular/material/button";
+import {MatIconModule} from "@angular/material/icon";
+import {MatMenuModule} from "@angular/material/menu";
 
 @Component({
   selector: 'app-navigation',
   standalone: true,
-  imports: [RouterLink, HeaderComponent, RouterModule, CommonModule],
+  imports: [RouterLink, HeaderComponent, RouterModule, CommonModule, MatToolbarModule, MatButtonModule, MatIconModule, MatMenuModule],
   templateUrl: './navigation.component.html',
   styleUrl: './navigation.component.css'
 })
 export class NavigationComponent {
-  constructor(public accountService: AccountService, private router: Router) { }
+  accountService = inject(AccountService)
+  router= inject(Router)
 
-  onLogoutClicked() {
-    this.accountService.getLogout().subscribe({
-      next: (response: string) => {
-        this.accountService.currentEmail = null;
-        this.router.navigate(['/login']);
-      },
-      error: (error) => {
-        console.log(error);
-      }
-    });
+  isLoggedIn() {
+    return this.accountService.isLoggedIn()
+  }
+
+  logout() {
+    this.accountService.getLogout()
+    this.router.navigate(['/'])
   }
 }

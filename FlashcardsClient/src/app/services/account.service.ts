@@ -6,12 +6,14 @@ import {RegisterUser} from "../models/register-user";
 import {LoginUser} from "../models/login-user";
 import {AccountUser} from "../models/account-user";
 import {AuthResponse} from "../interfaces/AuthResponse";
+import {jwtDecode} from "jwt-decode";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AccountService {
   private apiUrl = environment.apiUrlAccount;
+  private tokenKey = 'token';
 
   users: AccountUser[] = [];
 
@@ -31,7 +33,7 @@ export class AccountService {
         response.isSuccess = !!response.token;
 
         if (response.isSuccess) {
-          localStorage.setItem('token', response.token!); // Use non-null assertion
+          localStorage.setItem(this.tokenKey, response.token!); // Use non-null assertion
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
           }
@@ -45,7 +47,21 @@ export class AccountService {
     );
   }
 
+  getUserDetail = () => {
+    const token = this.getToken();
+    if(!token) return null;
+    const decodedToken: any = jwtDecode(token);
+    const userDetail
+      = {
+      id: decodedToken.id,
+      fullName: decodedToken.name,
+      email: decodedToken.email,
+    }
+    return userDetail;
+  }
+
   public getLogout() : Observable<string> {
+    localStorage.removeItem(this.tokenKey);
     return this.http.get<string>(`${this.apiUrl}/GetLogout`);
   }
 
@@ -55,6 +71,25 @@ export class AccountService {
 
     return this.http.post<any>(`${this.apiUrl}/GenerateNewAccessToken/generate-new-jwt-token`, {token: token, refreshToken});
   }
+
+  isLoggedIn = ():boolean => {
+    const token = this.getToken();
+    if(!token) return false;
+
+    return !this.isTokenExpired();
+  }
+
+  private isTokenExpired() {
+    const token = this.getToken();
+    if(!token) return true;
+    const decoded = jwtDecode(token);
+    const isTokenExpired = Date.now() >= decoded['exp']! * 1000;
+    if (isTokenExpired) this.getLogout();
+
+    return isTokenExpired;
+  }
+
+  private getToken = () :string | null => localStorage.getItem(this.tokenKey) || '';
 
   public getUsers() : Observable<AccountUser[]> {
     let headers = new HttpHeaders();
