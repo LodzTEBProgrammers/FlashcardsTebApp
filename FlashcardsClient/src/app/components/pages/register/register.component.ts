@@ -57,7 +57,7 @@ export class RegisterComponent {
 
           this.isRegisterFormSubmitted = false;
 
-          this.router.navigate(['/resources']);
+          this.router.navigate(['/']);
           localStorage["token"] = response.token;
 
           this.registerForm.reset();

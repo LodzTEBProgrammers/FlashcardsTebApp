@@ -43,7 +43,7 @@ export class LoginComponent {
           localStorage["token"] = response.token;
           localStorage["refreshToken"] = response.refreshToken;
 
-          this.router.navigate(['/resources']);
+          this.router.navigate(['/']);
 
           this.loginForm.reset();
           this.matSnackBar.open('Pomyślnie zalogowano! :)', 'Zamknij', { duration: 5000 });
