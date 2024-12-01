@@ -31,14 +31,6 @@ export class LoginComponent {
     });
   }
 
-  get login_emailControl(): any {
-    return this.loginForm.controls["email"];
-  }
-
-  get login_passwordControl(): any {
-    return this.loginForm.controls["password"];
-  }
-
   loginSubmitted() {
     this.isLoginFormSubmitted = true;
 
@@ -48,7 +40,6 @@ export class LoginComponent {
           console.log(response);
 
           this.isLoginFormSubmitted = false;
-          this.accountService.currentEmail = response.email;
           localStorage["token"] = response.token;
           localStorage["refreshToken"] = response.refreshToken;
 

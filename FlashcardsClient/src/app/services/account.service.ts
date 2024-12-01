@@ -17,12 +17,9 @@ export class AccountService {
 
   users: AccountUser[] = [];
 
-  public currentEmail: string | null = null;
-  public currentPersonName: string | null = null;
 
 
   constructor(private http: HttpClient) {
-    this.currentPersonName = localStorage.getItem('currentPersonName'); // Retrieve from local storage
   }
 
   public postRegister(registerUser: RegisterUser) : Observable<any> {
@@ -39,16 +36,11 @@ export class AccountService {
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
           }
-          this.currentEmail = response.email; // Set the currentEmail here
-          this.currentPersonName = response.personName; // Set the currentPersonName here
-          localStorage.setItem('currentPersonName', response.personName!); // Store in local storage
-          localStorage.setItem('currentEmail', response.email!); // Store in local storage
-          response.message = "Login Success";
+          response.message
 
         } else {
-          response.message = "Login Failed";
+          response.message
         }
-        console.log(`isSuccess: ${response.isSuccess}, message: ${response.message}, token: ${response.token}`);
         return response;
       })
     );
@@ -59,8 +51,8 @@ export class AccountService {
     if (!token) return null;
     const decodedToken: any = jwtDecode(token);
     const userDetail = {
-      id: decodedToken.id,
-      fullName: decodedToken.personName, // Use personName instead of name
+      id: decodedToken.sub, // Assuming 'sub' is the user ID
+      fullName: decodedToken.name, // Use 'name' instead of 'personName'
       email: decodedToken.email,
     }
     return userDetail;
