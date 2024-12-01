@@ -18,9 +18,12 @@ export class AccountService {
   users: AccountUser[] = [];
 
   public currentEmail: string | null = null;
+  public currentPersonName: string | null = null;
 
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    this.currentPersonName = localStorage.getItem('currentPersonName'); // Retrieve from local storage
+  }
 
   public postRegister(registerUser: RegisterUser) : Observable<any> {
     return this.http.post<RegisterUser>(`${this.apiUrl}/PostRegister`, registerUser);
@@ -29,15 +32,19 @@ export class AccountService {
   public postLogin(loginUser: LoginUser): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(`${this.apiUrl}/PostLogin`, loginUser).pipe(
       map(response => {
-        // Derive isSuccess based on the presence of the token
         response.isSuccess = !!response.token;
 
         if (response.isSuccess) {
-          localStorage.setItem(this.tokenKey, response.token!); // Use non-null assertion
+          localStorage.setItem(this.tokenKey, response.token!);
           if (response.refreshToken) {
             localStorage.setItem('refreshToken', response.refreshToken);
           }
+          this.currentEmail = response.email; // Set the currentEmail here
+          this.currentPersonName = response.personName; // Set the currentPersonName here
+          localStorage.setItem('currentPersonName', response.personName!); // Store in local storage
+          localStorage.setItem('currentEmail', response.email!); // Store in local storage
           response.message = "Login Success";
+
         } else {
           response.message = "Login Failed";
         }
@@ -49,12 +56,11 @@ export class AccountService {
 
   getUserDetail = () => {
     const token = this.getToken();
-    if(!token) return null;
+    if (!token) return null;
     const decodedToken: any = jwtDecode(token);
-    const userDetail
-      = {
+    const userDetail = {
       id: decodedToken.id,
-      fullName: decodedToken.name,
+      fullName: decodedToken.personName, // Use personName instead of name
       email: decodedToken.email,
     }
     return userDetail;
@@ -91,10 +97,10 @@ export class AccountService {
 
   private getToken = () :string | null => localStorage.getItem(this.tokenKey) || '';
 
-  public getUsers() : Observable<AccountUser[]> {
+  public getUsers(): Observable<AccountUser[]> {
     let headers = new HttpHeaders();
     headers = headers.append('Authorization', "Bearer nicolaToken");
 
-    return this.http.get<AccountUser[]>(`${this.apiUrl}/GetUsers`, {headers: headers});
+    return this.http.get<AccountUser[]>(`${this.apiUrl}/GetUsers`, { headers: headers });
   }
 }

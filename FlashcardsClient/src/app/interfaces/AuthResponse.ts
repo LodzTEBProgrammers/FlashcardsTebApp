@@ -4,4 +4,5 @@ export interface AuthResponse {
   email: string | null;
   isSuccess: boolean;
   message: string;
+  personName: string | null; // Add this property
 }

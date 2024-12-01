@@ -7,3 +7,8 @@ a[routerLink] {
   color: white;
   text-decoration: none;
 }
+
+.letter, .name {
+  color: white;
+  text-decoration: none;
+}
