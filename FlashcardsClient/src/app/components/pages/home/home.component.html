@@ -7,7 +7,7 @@
 
     <div class="flex flex-col items-center gap-3 justify-center">
       @if(accountService.getUserDetail()) {
-        <h1 class="text-2xl">Jesteś zalogowany jako:
+        <h1 class="text-2xl h1-my">Jesteś zalogowany jako:
           <span class="font-bold bg-purple-600 rounded-md p-2 text-white">
             {{ accountService.getUserDetail()?.fullName }}
           </span>
